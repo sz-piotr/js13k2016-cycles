@@ -2,41 +2,16 @@
 <html>
 
 <head>
-    <script src="tile.js"></script>
-    <script src="script.js"></script>
-    <style>
-        body,
-        html {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background-color: black;
-        }
-        canvas {
-            background-color: #333;
-            vertical-align: bottom;
-        }
-        div {
-            margin: 0;
-            padding: 0;
-        }
-        #top, #bottom {
-            height: 100px;
-        }
-    </style>
+    <script src="init.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
-    <div id="top">
-        <canvas id="scores" width="300" height="100"></canvas>
-    </div>
-    <div id="middle">
-        <canvas id="view" width="600" height="600"></canvas>
-    </div>
-    <div id="bottom">
-        <canvas id="footer" width="300" height="100"></canvas>
-    </div>
+    <span id="content-wrapper">
+        <canvas id="top" style='background-color: red;'></canvas>
+        <canvas id="mid" style='background-color: yellow;'></canvas>
+        <canvas id="bot" style='background-color: green;'></canvas>
+    </span>
 </body>
 
 </html>
