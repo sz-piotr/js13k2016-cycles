@@ -1,12 +1,17 @@
 window.onload = function () {
-    var size = {
+    let view = setupView();
+    new Game(view).start();
+}
+
+function setupView() {
+    let size = {
         top: 2,
         mid: 7,
         bot: 2
     }
     size.sum = size.top + size.mid + size.bot;
-    var ratio = size.mid / size.sum;
-    var canvas = {
+    let ratio = size.mid / size.sum;
+    let canvas = {
         top: document.getElementById('top'),
         mid: document.getElementById('mid'),
         bot: document.getElementById('bot')
@@ -15,10 +20,12 @@ window.onload = function () {
     updateOnResize();
     window.addEventListener('resize', updateOnResize);
 
+    return canvas
+
     function updateOnResize() {
-        var unit;
-        var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        let unit;
+        let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        let height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
         if (height * ratio <= width) {
             unit = height / size.sum;
