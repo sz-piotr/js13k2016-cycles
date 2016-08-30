@@ -1,16 +1,37 @@
 function Graphics(view) {
-    let midCtx = view.mid.getContext('2d');
+    let ctx = {
+        top: view.top.getContext('2d'),
+        mid: view.mid.getContext('2d'),
+        bot: view.bot.getContext('2d')
+    }
 
-    this.clear = function() {
-        midCtx.fillStyle = '#333';
-        midCtx.fillRect(0, 0, view.mid.width, view.mid.height);
+    this.update = function(data) {
+        clear('mid');
+        clear('bot');
+        drawFps(data.fps);
+        drawBoard(data.board);
+        data.oldFps = data.fps;
     };
 
-    this.drawBoard = function(board) {
+    function clear(location) {
+        ctx[location].fillStyle = '#333';
+        ctx[location].fillRect(0, 0, view[location].width, view[location].height);
+    };
+
+    function drawFps(fps) {
+        ctx.bot.fillStyle = '#f00';
+        let fontHeight = view.bot.height / 3;
+        ctx.bot.textBaseline = 'middle';
+        ctx.bot.textAlign = "center";
+        ctx.bot.font = 'bold ' + fontHeight + 'px sans-serif';
+        ctx.bot.fillText(fps, view.bot.width / 2, view.bot.height / 2);
+    };
+
+    function drawBoard(board) {
         TilePainter.resize(view.mid.width, board.length);
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board[i].length; j++) {
-                TilePainter.paint(midCtx, i, j, board[i][j]);
+                TilePainter.paint(ctx.mid, i, j, board[i][j]);
             }
         }
     };
@@ -44,7 +65,7 @@ let TilePainter = {
 
         this.drawOutline(ctx, x - this.outline, y - this.outline);
 
-        if(!(tile.n || tile.w || tile.s || tile.e)) {
+        if (!(tile.n || tile.w || tile.s || tile.e)) {
             this.drawGlitch(ctx, x, y, tile);
             return;
         }
@@ -54,6 +75,13 @@ let TilePainter = {
         ctx.fillStyle = '#F9ECC0';
         roundRect(ctx, x, y, this.width, this.height, this.radius);
         ctx.fillStyle = 'black';
+        this.drawPattern(ctx, x, y, tile);
+    },
+    drawOutline: function(ctx, x, y) {
+        ctx.fillStyle = '#181818';
+        roundRect(ctx, x, y, this.size, this.size, this.radius);
+    },
+    drawPattern(ctx, x, y, tile) {
         if (tile.n)
             ctx.fillRect(x + this.line.horizontal.width, y, this.line.vertical.width, this.line.vertical.height);
         if (tile.w)
@@ -63,16 +91,21 @@ let TilePainter = {
         if (tile.e)
             ctx.fillRect(x + this.line.horizontal.width + this.line.vertical.width, y + this.line.vertical.height, this.line.horizontal.width, this.line.horizontal.height);
         ctx.beginPath();
-        ctx.ellipse(x + this.width / 2, y + this.height / 2, this.line.vertical.width / Math.sqrt(2), this.line.horizontal.height / Math.sqrt(2), 0, 0, 2 * Math.PI);
+        this.drawCenterPin(ctx, x + this.width / 2, y + this.height / 2, this.line.vertical.width, this.line.horizontal.height);
         ctx.fill();
     },
-    drawOutline: function(ctx, x, y) {
-        ctx.fillStyle = '#181818';
-        roundRect(ctx, x, y, this.size, this.size, this.radius);
+    drawCenterPin: function(ctx, x, y, width, height) {
+        if (ctx.ellipse) {
+            ctx.ellipse(x, y, width / Math.sqrt(2), height / Math.sqrt(2), 0, 0, 2 * Math.PI);
+        } else {
+            width += 2;
+            height += 2;
+            ctx.fillRect(x - width / 2, y - width / 2, width, height);
+        }
     },
     drawGlitch: function(ctx, x, y, tile) {
         tile.hue = tile.hue || Math.random() * 360;
-        if(Math.random() < 0.03)
+        if (Math.random() < 0.03)
             tile.hue = Math.random() * 360;
         ctx.fillStyle = 'hsl(' + tile.hue + ', 100%, 35%)';
         roundRect(ctx, x, y + this.shadow, this.width, this.height, this.radius);
