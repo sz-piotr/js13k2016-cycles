@@ -1,6 +1,7 @@
 window.onload = function () {
     let view = setupView();
-    new Game(view).start();
+    let game = new Game(view);
+    game.start();
 }
 
 function setupView() {
@@ -14,13 +15,14 @@ function setupView() {
     let canvas = {
         top: document.getElementById('top'),
         mid: document.getElementById('mid'),
-        bot: document.getElementById('bot')
+        bot: document.getElementById('bot'),
+        back: document.getElementById('back')
     }
 
     updateOnResize();
     window.addEventListener('resize', updateOnResize);
 
-    return canvas
+    return canvas;
 
     function updateOnResize() {
         let unit;
@@ -34,11 +36,13 @@ function setupView() {
         }
 
         canvas.top.width = size.mid * unit;
-        canvas.mid.width = size.mid * unit;
+        canvas.mid.width = size.mid * unit * 0.95;
+        canvas.back.width = size.mid * unit;
         canvas.bot.width = size.mid * unit;
 
         canvas.top.height = size.top * unit;
-        canvas.mid.height = size.mid * unit;
+        canvas.mid.height = size.mid * unit * 0.95;
+        canvas.back.height = size.mid * unit;
         canvas.bot.height = size.bot * unit;
     }
 }

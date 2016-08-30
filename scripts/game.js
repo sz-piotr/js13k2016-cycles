@@ -1,15 +1,16 @@
 function Game(view) {
     let graphics = new Graphics(view);
 
-    let currentLevel;
     let data = {};
+    let input = new Input(view, data);
 
     this.start = function() {
-        currentLevel = localStorage.getItem('level') || 0;
-        localStorage.setItem('level', currentLevel);
+        data.currentLevel = localStorage.getItem('level') || 0;
+        localStorage.setItem('level', data.currentLevel);
 
         data.board = BoardCreator.create();
 
+        input.listen();
         gameLoop();
     }
 

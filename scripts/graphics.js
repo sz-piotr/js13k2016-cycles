@@ -9,8 +9,7 @@ function Graphics(view) {
         clear('mid');
         clear('bot');
         drawFps(data.fps);
-        drawBoard(data.board);
-        data.oldFps = data.fps;
+        drawBoard(data.board, data.offset);
     };
 
     function clear(location) {
@@ -27,11 +26,21 @@ function Graphics(view) {
         ctx.bot.fillText(fps, view.bot.width / 2, view.bot.height / 2);
     };
 
-    function drawBoard(board) {
+    function drawBoard(board, offset) {
         TilePainter.resize(view.mid.width, board.length);
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board[i].length; j++) {
-                TilePainter.paint(ctx.mid, i, j, board[i][j]);
+                if (j === offset.row) {
+                    TilePainter.paint(ctx.mid, i + offset.value, j, board[i][j]);
+                    TilePainter.paint(ctx.mid, i + offset.value - board.length, j, board[i][j]);
+                    TilePainter.paint(ctx.mid, i + offset.value + board.length, j, board[i][j]);
+                } else if (i === offset.column) {
+                    TilePainter.paint(ctx.mid, i, j + offset.value, board[i][j]);
+                    TilePainter.paint(ctx.mid, i, j + offset.value - board.length, board[i][j]);
+                    TilePainter.paint(ctx.mid, i, j + offset.value + board.length, board[i][j]);
+                } else {
+                    TilePainter.paint(ctx.mid, i, j, board[i][j]);
+                }
             }
         }
     };
@@ -39,8 +48,7 @@ function Graphics(view) {
 
 let TilePainter = {
     resize: function(canvasSize, boardSize) {
-        this.size = canvasSize / (boardSize + 0.5);
-        this.padding = this.size / 4;
+        this.size = canvasSize / boardSize;
         this.outline = this.size / 20;
         this.width = this.size - this.outline * 2;
         this.height = this.width * 6 / 7;
@@ -60,8 +68,11 @@ let TilePainter = {
         };
     },
     paint: function(ctx, x, y, tile) {
-        x = this.padding + x * this.size + this.outline;
-        y = this.padding + y * this.size + this.outline;
+        x = x * this.size + this.outline;
+        y = y * this.size + this.outline;
+
+        if (!this.visible(x - this.outline, y - this.outline))
+            return;
 
         this.drawOutline(ctx, x - this.outline, y - this.outline);
 
@@ -76,6 +87,11 @@ let TilePainter = {
         roundRect(ctx, x, y, this.width, this.height, this.radius);
         ctx.fillStyle = 'black';
         this.drawPattern(ctx, x, y, tile);
+    },
+    visible: function(x, y) {
+        let min = -this.size;
+        let max = this.size * 7;
+        return (x >= min) && (x <= max) && (y >= min) && (y <= max);
     },
     drawOutline: function(ctx, x, y) {
         ctx.fillStyle = '#181818';

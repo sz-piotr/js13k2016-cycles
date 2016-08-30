@@ -6,12 +6,11 @@ body, html {
     background-color: black;
     overflow-y: hidden;
 }
-canvas {
+canvas, div {
     background-color: #333;
     display: block;
 }
 .center {
-    background-color: #333;
     position: absolute;
     left: 50%;
     top: 50%;
