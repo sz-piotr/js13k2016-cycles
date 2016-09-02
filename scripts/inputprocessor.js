@@ -37,6 +37,10 @@ function InputProcessor(data) {
         }
     }
 
+    function clamp(number, min, max) {
+        return Math.min(Math.max(number, min), max);
+    }
+
     this.onrelease = function() {
         data.offset.value = Math.round(-data.offset.value) || 0;
         if (data.offset.value < 0)
@@ -68,7 +72,7 @@ function InputProcessor(data) {
         }
     }
 
-    function clamp(number, min, max) {
-        return Math.min(Math.max(number, min), max);
+    this.oncancel = function() {
+        data.offset = {};
     }
 }
