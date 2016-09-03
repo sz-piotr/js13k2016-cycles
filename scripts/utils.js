@@ -19,6 +19,8 @@ function Vector2(x, y) {
     }
 
     this.equals = function (other) {
+        if (!(other instanceof Vector2))
+            return false;
         return x === other.x && y === other.y;
     }
 }

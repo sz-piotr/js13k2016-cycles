@@ -35,6 +35,10 @@ let BoardCreator = {
             if (board.get(position) !== undefined) {
                 let tiles = shuffle(tileset.slice());
                 while (true) {
+                    if(tiles.length === 0) {
+                        console.error('ateall', position.x, position.y);
+                        return;
+                    }
                     board.set(position, tiles.pop());
                     if (BoardAnalizer.isTree(board))
                         break;
