@@ -58,6 +58,11 @@ function Matrix(width, height, fill) {
             matrix[position.x][position.y] = value;
     }
 
+    this.hasXY = function (x, y) {
+        return inBounds(new Vector2(x, y));
+    }
+    this.has = inBounds;
+
     function inBounds(position) {
         return position.x >= 0 && position.x < width && position.y >= 0 && position.y < height;
     }
@@ -92,4 +97,5 @@ function shuffle(a) {
         a[i - 1] = a[j];
         a[j] = x;
     }
+    return a;
 }

@@ -119,7 +119,7 @@ let TilePainter = {
     },
     drawGlitch: function (ctx, x, y, tile) {
         tile.hue = tile.hue || Math.random() * 360;
-        if (Math.random() < 0.0002)
+        if (Math.random() < 0.03)
             tile.hue = Math.random() * 360;
         ctx.fillStyle = 'hsl(' + tile.hue + ', 100%, 35%)';
         roundRect(ctx, x, y + this.shadow, this.width, this.height, this.radius);
