@@ -9,7 +9,6 @@ function Game(view) {
         localStorage.setItem('level', data.currentLevel);
 
         data.board = BoardCreator.create();
-
         input.listen();
         gameLoop();
     }

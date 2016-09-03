@@ -44,7 +44,7 @@ function Input(view, data) {
 
     function eventBoardLocation(event) {
         let board = view.mid.getBoundingClientRect();
-        let size = view.mid.width / data.board.length;
+        let size = view.mid.width / data.board.size;
         return {
             x: (event.clientX - board.left) / size,
             y: (event.clientY - board.top) / size

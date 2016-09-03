@@ -5,7 +5,7 @@ function Graphics(view) {
         bot: view.bot.getContext('2d')
     }
 
-    this.update = function(data) {
+    this.update = function (data) {
         clear('mid');
         clear('bot');
         drawFps(data.fps);
@@ -27,27 +27,25 @@ function Graphics(view) {
     };
 
     function drawBoard(board, offset) {
-        TilePainter.resize(view.mid.width, board.length);
-        for (let i = 0; i < board.length; i++) {
-            for (let j = 0; j < board[i].length; j++) {
-                if (j === offset.row) {
-                    TilePainter.paint(ctx.mid, i + offset.value, j, board[i][j]);
-                    TilePainter.paint(ctx.mid, i + offset.value - board.length, j, board[i][j]);
-                    TilePainter.paint(ctx.mid, i + offset.value + board.length, j, board[i][j]);
-                } else if (i === offset.column) {
-                    TilePainter.paint(ctx.mid, i, j + offset.value, board[i][j]);
-                    TilePainter.paint(ctx.mid, i, j + offset.value - board.length, board[i][j]);
-                    TilePainter.paint(ctx.mid, i, j + offset.value + board.length, board[i][j]);
-                } else {
-                    TilePainter.paint(ctx.mid, i, j, board[i][j]);
-                }
+        TilePainter.resize(view.mid.width, board.size);
+        board.forEach(function (element, pos) {
+            if (pos.y === offset.row) {
+                TilePainter.paint(ctx.mid, pos.x + offset.value, pos.y, element);
+                TilePainter.paint(ctx.mid, pos.x + offset.value - board.size, pos.y, element);
+                TilePainter.paint(ctx.mid, pos.x + offset.value + board.size, pos.y, element);
+            } else if (pos.x === offset.column) {
+                TilePainter.paint(ctx.mid, pos.x, pos.y + offset.value, element);
+                TilePainter.paint(ctx.mid, pos.x, pos.y + offset.value - board.size, element);
+                TilePainter.paint(ctx.mid, pos.x, pos.y + offset.value + board.size, element);
+            } else {
+                TilePainter.paint(ctx.mid, pos.x, pos.y, element);
             }
-        }
+        });
     };
 }
 
 let TilePainter = {
-    resize: function(canvasSize, boardSize) {
+    resize: function (canvasSize, boardSize) {
         this.size = canvasSize / boardSize;
         this.outline = this.size / 20;
         this.width = this.size - this.outline * 2;
@@ -67,7 +65,7 @@ let TilePainter = {
             }
         };
     },
-    paint: function(ctx, x, y, tile) {
+    paint: function (ctx, x, y, tile) {
         x = x * this.size + this.outline;
         y = y * this.size + this.outline;
 
@@ -88,12 +86,12 @@ let TilePainter = {
         ctx.fillStyle = 'black';
         this.drawPattern(ctx, x, y, tile);
     },
-    visible: function(x, y) {
+    visible: function (x, y) {
         let min = -this.size;
         let max = this.size * 7;
         return (x >= min) && (x <= max) && (y >= min) && (y <= max);
     },
-    drawOutline: function(ctx, x, y) {
+    drawOutline: function (ctx, x, y) {
         ctx.fillStyle = '#181818';
         roundRect(ctx, x, y, this.size, this.size, this.radius);
     },
@@ -110,7 +108,7 @@ let TilePainter = {
         this.drawCenterPin(ctx, x + this.width / 2, y + this.height / 2, this.line.vertical.width, this.line.horizontal.height);
         ctx.fill();
     },
-    drawCenterPin: function(ctx, x, y, width, height) {
+    drawCenterPin: function (ctx, x, y, width, height) {
         if (ctx.ellipse) {
             ctx.ellipse(x, y, width / Math.sqrt(2), height / Math.sqrt(2), 0, 0, 2 * Math.PI);
         } else {
@@ -119,9 +117,9 @@ let TilePainter = {
             ctx.fillRect(x - width / 2, y - width / 2, width, height);
         }
     },
-    drawGlitch: function(ctx, x, y, tile) {
+    drawGlitch: function (ctx, x, y, tile) {
         tile.hue = tile.hue || Math.random() * 360;
-        if (Math.random() < 0.03)
+        if (Math.random() < 0.0002)
             tile.hue = Math.random() * 360;
         ctx.fillStyle = 'hsl(' + tile.hue + ', 100%, 35%)';
         roundRect(ctx, x, y + this.shadow, this.width, this.height, this.radius);

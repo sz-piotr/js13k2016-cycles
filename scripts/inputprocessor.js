@@ -2,11 +2,11 @@ function InputProcessor(data) {
     let tileSelected;
     let offset = {};
 
-    this.onpress = function(location) {
+    this.onpress = function (location) {
         tileSelected = location;
     }
 
-    this.onmove = function(location) {
+    this.onmove = function (location) {
         offset = {
             x: location.x - tileSelected.x,
             y: location.y - tileSelected.y
@@ -29,7 +29,7 @@ function InputProcessor(data) {
     }
 
     function updateDataOffsetValue() {
-        let limit = data.board.length - 1;
+        let limit = data.board.width - 1;
         if (data.offset.row !== undefined) {
             data.offset.value = clamp(offset.x, -limit, limit);
         } else {
@@ -41,10 +41,10 @@ function InputProcessor(data) {
         return Math.min(Math.max(number, min), max);
     }
 
-    this.onrelease = function() {
+    this.onrelease = function () {
         data.offset.value = Math.round(-data.offset.value) || 0;
         if (data.offset.value < 0)
-            data.offset.value += data.board.length;
+            data.offset.value += data.board.width;
         if (data.offset.value !== 0) {
             updateBoardAfterShift();
         }
@@ -53,26 +53,25 @@ function InputProcessor(data) {
     }
 
     function updateBoardAfterShift() {
+        let shifted = [];
         if (data.offset.row !== undefined) {
-            let shifted = [];
-            for (let i = 0; i < data.board.length; i++) {
-                shifted[i] = data.board[(i + data.offset.value) % data.board.length][data.offset.row];
+            for (let i = 0; i < data.board.size; i++) {
+                shifted[i] = data.board.getXY((i + data.offset.value) % data.board.size, data.offset.row);
             }
-            for (let i = 0; i < data.board.length; i++) {
-                data.board[i][data.offset.row] = shifted[i];
+            for (let i = 0; i < data.board.size; i++) {
+                data.board.setXY(i, data.offset.row, shifted[i]);
             }
         } else {
-            let shifted = [];
-            for (let i = 0; i < data.board.length; i++) {
-                shifted[i] = data.board[data.offset.column][(i + data.offset.value) % data.board.length];
+            for (let i = 0; i < data.board.size; i++) {
+                shifted[i] = data.board.getXY(data.offset.column, (i + data.offset.value) % data.board.size);
             }
-            for (let i = 0; i < data.board.length; i++) {
-                data.board[data.offset.column][i] = shifted[i];
+            for (let i = 0; i < data.board.size; i++) {
+                data.board.setXY(data.offset.column, i, shifted[i]);
             }
         }
     }
 
-    this.oncancel = function() {
+    this.oncancel = function () {
         data.offset = {};
     }
 }
