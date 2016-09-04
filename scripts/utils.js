@@ -25,11 +25,13 @@ function Vector2(x, y) {
     }
 }
 
+Vector2.ZERO = new Vector2(0, 0);
+
 Vector2.directions = [
+    new Vector2(0, -1),
     new Vector2(1, 0),
     new Vector2(0, 1),
-    new Vector2(-1, 0),
-    new Vector2(0, -1)
+    new Vector2(-1, 0)
 ]
 
 function Matrix(width, height, fill) {
@@ -75,6 +77,14 @@ function Matrix(width, height, fill) {
                 callback(matrix[i][j], new Vector2(i, j));
     }
 
+    this.clone = function () {
+        let clone = new Matrix(width, height);
+        clone.forEach(function (element, position) {
+            clone.set(position, deepCopy(matrix[position.x][position.y]));
+        });
+        return clone;
+    }
+
     Object.defineProperties(this, {
         "width": {
             value: width,
@@ -100,4 +110,8 @@ function shuffle(a) {
         a[j] = x;
     }
     return a;
+}
+
+function deepCopy(obj) {
+    return JSON.parse(JSON.stringify(obj));
 }

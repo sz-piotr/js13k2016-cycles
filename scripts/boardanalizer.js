@@ -8,8 +8,6 @@ let BoardAnalizer = {
             if (visit(board, visited, position))
                 result = false;
         });
-        if(result === false)
-            console.log('redo!');
         return result;
 
         function visit(board, visited, position, previous) {
@@ -19,24 +17,35 @@ let BoardAnalizer = {
 
             for (let i = 0; i < Vector2.directions.length; i++) {
                 let next = position.add(Vector2.directions[i]);
-                if (!next.equals(previous) && board.has(next) && areNeighbours(board, position, next)) {
+                if (!next.equals(previous) && board.has(next) && BoardAnalizer.areNeighbours(board, position, next)) {
                     if (visit(board, visited, next, position))
                         return true;
                 }
             }
-
             return false;
         }
+    },
+    findCycles: function (data) {
+        data.cycles = data.board.clone();
+        data.cycles.forEach(function (element, position) {
+            smoothMultiple(data.cycles, position);
+        });
 
-        function areNeighbours(board, a, b) {
-            let dir = b.sub(a);
-            a = board.get(a);
-            b = board.get(b);
-            let east = (dir.x === 1 && a.e && b.w);
-            let west = (dir.x === -1 && a.w && b.e);
-            let north = (dir.y === -1 && a.n && b.s);
-            let south = (dir.y === 1 && a.s && b.n);
-            return east || west || north || south;
+        function smoothMultiple(board, position) {
+
+        };
+
+        function smoothSingle(board, position) {
+            let neighbours = 0;
+            for (let i = 0; i < Vector2.directions.length; i++) {
+                let next = position.add(Vector2.directions[i]);
+                if (board.has(next) && BoardAnalizer.areNeighbours(board, position, next)) {
+                    neighbours++;
+                }
+            }
         }
+    },
+    areNeighbours: function (board, a, b) {
+        return board.get(a).has(b.sub(a)) && board.get(b).has(a.sub(b));
     }
 }

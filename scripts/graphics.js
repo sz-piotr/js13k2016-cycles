@@ -74,7 +74,7 @@ let TilePainter = {
 
         this.drawOutline(ctx, x - this.outline, y - this.outline);
 
-        if (!(tile.n || tile.w || tile.s || tile.e)) {
+        if (tile.glitch) {
             this.drawGlitch(ctx, x, y, tile);
             return;
         }
@@ -96,13 +96,13 @@ let TilePainter = {
         roundRect(ctx, x, y, this.size, this.size, this.radius);
     },
     drawPattern(ctx, x, y, tile) {
-        if (tile.n)
+        if (tile.has('n'))
             ctx.fillRect(x + this.line.horizontal.width, y, this.line.vertical.width, this.line.vertical.height);
-        if (tile.w)
+        if (tile.has('w'))
             ctx.fillRect(x, y + this.line.vertical.height, this.line.horizontal.width, this.line.horizontal.height);
-        if (tile.s)
+        if (tile.has('s'))
             ctx.fillRect(x + this.line.horizontal.width, y + this.line.vertical.height + this.line.horizontal.height, this.line.vertical.width, this.line.vertical.height);
-        if (tile.e)
+        if (tile.has('e'))
             ctx.fillRect(x + this.line.horizontal.width + this.line.vertical.width, y + this.line.vertical.height, this.line.horizontal.width, this.line.horizontal.height);
         ctx.beginPath();
         this.drawCenterPin(ctx, x + this.width / 2, y + this.height / 2, this.line.vertical.width, this.line.horizontal.height);

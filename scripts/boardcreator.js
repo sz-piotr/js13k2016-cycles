@@ -1,6 +1,6 @@
 let BoardCreator = {
     create: function (level) {
-        let board = new Matrix(7, 7, {});
+        let board = new Matrix(7, 7, new Tile());
         this.spiralFill(board);
         this.levelFill(board, level);
         return board;
@@ -10,9 +10,10 @@ let BoardCreator = {
         let steps = 1;
         let times = 2;
         let direction = 0;
-        while (board.has(position)) {
+        while (true) {
             for (let i = 0; i < steps; i++) {
-                fill(board, position);
+                if (!fill(board, position))
+                    return;
                 position = position.add(Vector2.directions[direction]);
             }
             direction = (direction + 1) % 4;
@@ -23,24 +24,23 @@ let BoardCreator = {
         }
 
         function fill(board, position) {
-            if (board.get(position) !== undefined) {
+            if (board.has(position)) {
                 let tiles = shuffle(tileset.slice());
                 while (true) {
-                    board.set(position, tiles.pop());
+                    board.set(position, tiles.pop().clone());
                     if (BoardAnalizer.isTree(board))
                         break;
                 }
+                return true;
             }
+            return false;
         }
     },
     levelFill: function (board, level) {
         board.forEach(function (element, position) {
             if (level.isGlitch(position)) {
-                board.set(position, {});
+                board.set(position, new Tile());
             }
         });
-    },
-    randomTile: function () {
-        return tileset[Math.floor(Math.random() * tileset.length)];
     }
 }
