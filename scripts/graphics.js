@@ -8,7 +8,7 @@ function Graphics(view) {
     this.update = function (data) {
         clear('mid');
         clear('bot');
-        drawFps(data.fps);
+        drawFps(data.time.fps);
         drawBoard(data.board, data.offset);
     };
 
@@ -118,9 +118,6 @@ let TilePainter = {
         }
     },
     drawGlitch: function (ctx, x, y, tile) {
-        tile.hue = tile.hue || Math.random() * 360;
-        if (Math.random() < 0.03)
-            tile.hue = Math.random() * 360;
         ctx.fillStyle = 'hsl(' + tile.hue + ', 100%, 35%)';
         roundRect(ctx, x, y + this.shadow, this.width, this.height, this.radius);
         ctx.fillStyle = 'hsl(' + tile.hue + ', 80%, 50%)';

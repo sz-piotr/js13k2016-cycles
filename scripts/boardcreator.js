@@ -1,18 +1,9 @@
 let BoardCreator = {
-    create: function () {
-        let board = new Matrix(7, 7);
-        this.checkerFill(board);
+    create: function (level) {
+        let board = new Matrix(7, 7, {});
         this.spiralFill(board);
+        this.levelFill(board, level);
         return board;
-    },
-    checkerFill: function (board) {
-        board.forEach(function (element, pos) {
-            if (pos.x % 2 === pos.y % 2)
-                board.set(pos, BoardCreator.randomTile());
-            else {
-                board.set(pos, {});
-            }
-        });
     },
     spiralFill: function (board) {
         let position = new Vector2(3, 3);
@@ -35,16 +26,19 @@ let BoardCreator = {
             if (board.get(position) !== undefined) {
                 let tiles = shuffle(tileset.slice());
                 while (true) {
-                    if(tiles.length === 0) {
-                        console.error('ateall', position.x, position.y);
-                        return;
-                    }
                     board.set(position, tiles.pop());
                     if (BoardAnalizer.isTree(board))
                         break;
                 }
             }
         }
+    },
+    levelFill: function (board, level) {
+        board.forEach(function (element, position) {
+            if (level.isGlitch(position)) {
+                board.set(position, {});
+            }
+        });
     },
     randomTile: function () {
         return tileset[Math.floor(Math.random() * tileset.length)];

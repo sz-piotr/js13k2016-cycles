@@ -18,7 +18,7 @@ function Input(view, data) {
     };
 
     function onMouseDown(event) {
-        if (ignoreMousePress)
+        if (data.ignoreInput || ignoreMousePress)
             return;
         if (contained(event, view.mid.getBoundingClientRect())) {
             ignoreMousePress = true;
@@ -27,7 +27,7 @@ function Input(view, data) {
     }
 
     function onMouseMove(e) {
-        if (!ignoreMousePress)
+        if (data.ignoreInput || !ignoreMousePress)
             return;
         inputProcessor.onmove(eventBoardLocation(event));
     }
@@ -57,7 +57,7 @@ function Input(view, data) {
 
     function onTouchStart(event) {
         event.preventDefault();
-        if (handledTouch !== false)
+        if (data.ignoreInput || handledTouch !== false)
             return;
         let touch = event.changedTouches[0];
         if (contained(touch, view.mid.getBoundingClientRect())) {
@@ -68,7 +68,7 @@ function Input(view, data) {
 
     function onTouchMove() {
         event.preventDefault();
-        if (handledTouch === false)
+        if (data.ignoreInput || handledTouch === false)
             return;
         for (let i = 0; i < event.changedTouches.length; i++) {
             if (event.changedTouches[i].identifier === handledTouch) {
