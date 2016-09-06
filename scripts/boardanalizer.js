@@ -26,13 +26,18 @@ let BoardAnalizer = {
         }
     },
     findCycles: function (data) {
-        let cycles = data.board.clone();
+        let cycles = data.board.clone(),
+            hasCycles = false;
         cycles.forEach(function (element, position) {
             smoothMultiple(cycles, position);
         });
         cycles.forEach(function (element, position) {
-            data.board.get(position).setPartOfCycle(!element.isEmpty());
+            let partOfCycle = !element.isEmpty();
+            if (partOfCycle)
+                hasCycles = true;
+            data.board.get(position).setPartOfCycle(partOfCycle);
         });
+        return hasCycles;
 
         function smoothMultiple(board, position) {
             let neighbourData = smoothSingle(board, position);

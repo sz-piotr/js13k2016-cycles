@@ -32,6 +32,8 @@ function Tile(n, e, s, w) {
     this.setPartOfCycle = function (value) {
         partOfCycle = value;
     }
+
+    this.offset = 0;
 }
 
 Tile.resolve = function (direction) {

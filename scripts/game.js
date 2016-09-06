@@ -30,7 +30,7 @@ function Game(view) {
 
     function updateTime() {
         let now = Date.now();
-        data.time.delta = now - data.time.last;
+        data.time.delta = (now - data.time.last) / 1000;
         data.time.last = now;
 
         data.time.history.push(data.time.delta);
@@ -40,7 +40,7 @@ function Game(view) {
         data.time.history.forEach(function (element) {
             data.time.fps += element;
         });
-        data.time.fps = Math.round(1000 / (data.time.fps / data.time.history.length));
+        data.time.fps = Math.round(data.time.history.length / data.time.fps);
     }
 }
 

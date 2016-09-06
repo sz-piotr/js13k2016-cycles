@@ -17,7 +17,7 @@ function BoardPainter(ctx, view) {
                 tilePainter.paintTile(ctx, pos.x, pos.y + offset.value - board.size, element);
                 tilePainter.paintTile(ctx, pos.x, pos.y + offset.value + board.size, element);
             } else {
-                tilePainter.paintTile(ctx, pos.x, pos.y, element);
+                tilePainter.paintTile(ctx, pos.x, pos.y - element.offset, element);
             }
         });
     };
