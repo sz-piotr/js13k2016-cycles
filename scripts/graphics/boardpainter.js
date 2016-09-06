@@ -1,45 +1,22 @@
-function Graphics(view) {
-    let ctx = {
-        top: view.top.getContext('2d'),
-        mid: view.mid.getContext('2d'),
-        bot: view.bot.getContext('2d')
-    }
-
-    this.update = function (data) {
-        clear('mid');
-        clear('bot');
-        drawFps(data.time.fps);
-        TilePainter.resize(view.mid.width, data.board.size);
+function BoardPainter(ctx, view) {
+    this.paint = function (data) {
+        TilePainter.resize(view.width, data.board.size);
         drawBoard(data.board, data.offset);
         drawCycles(data.cycles);
-    };
-
-    function clear(location) {
-        ctx[location].fillStyle = '#333';
-        ctx[location].fillRect(0, 0, view[location].width, view[location].height);
-    };
-
-    function drawFps(fps) {
-        ctx.bot.fillStyle = '#f00';
-        let fontHeight = view.bot.height / 3;
-        ctx.bot.textBaseline = 'middle';
-        ctx.bot.textAlign = "center";
-        ctx.bot.font = 'bold ' + fontHeight + 'px sans-serif';
-        ctx.bot.fillText(fps, view.bot.width / 2, view.bot.height / 2);
-    };
+    }
 
     function drawBoard(board, offset) {
         board.forEach(function (element, pos) {
             if (pos.y === offset.row) {
-                TilePainter.paint(ctx.mid, pos.x + offset.value, pos.y, element);
-                TilePainter.paint(ctx.mid, pos.x + offset.value - board.size, pos.y, element);
-                TilePainter.paint(ctx.mid, pos.x + offset.value + board.size, pos.y, element);
+                TilePainter.paint(ctx, pos.x + offset.value, pos.y, element);
+                TilePainter.paint(ctx, pos.x + offset.value - board.size, pos.y, element);
+                TilePainter.paint(ctx, pos.x + offset.value + board.size, pos.y, element);
             } else if (pos.x === offset.column) {
-                TilePainter.paint(ctx.mid, pos.x, pos.y + offset.value, element);
-                TilePainter.paint(ctx.mid, pos.x, pos.y + offset.value - board.size, element);
-                TilePainter.paint(ctx.mid, pos.x, pos.y + offset.value + board.size, element);
+                TilePainter.paint(ctx, pos.x, pos.y + offset.value, element);
+                TilePainter.paint(ctx, pos.x, pos.y + offset.value - board.size, element);
+                TilePainter.paint(ctx, pos.x, pos.y + offset.value + board.size, element);
             } else {
-                TilePainter.paint(ctx.mid, pos.x, pos.y, element);
+                TilePainter.paint(ctx, pos.x, pos.y, element);
             }
         });
     };
@@ -48,13 +25,14 @@ function Graphics(view) {
         if (!board)
             return;
         board.forEach(function (element, pos) {
-            TilePainter.paintCycleDark(ctx.mid, pos.x, pos.y, element);
+            TilePainter.paintCycleDark(ctx, pos.x, pos.y, element);
         });
         board.forEach(function (element, pos) {
-            TilePainter.paintCycleLight(ctx.mid, pos.x, pos.y, element);
+            TilePainter.paintCycleLight(ctx, pos.x, pos.y, element);
         });
     };
 }
+
 
 let TilePainter = {
     resize: function (canvasSize, boardSize) {
@@ -91,7 +69,7 @@ let TilePainter = {
         ctx.fillStyle = '#fff';
         this.paintCycle(ctx, center, tile, this.line.vertical.width * 1.3, this.line.horizontal.height * 1.3);
     },
-    paintCycle: function(ctx, center, tile, width, height) {
+    paintCycle: function (ctx, center, tile, width, height) {
         this.drawCenterPin(ctx, center.x, center.y, width, height);
         if (tile.has('s'))
             ctx.fillRect(center.x - width / 2, center.y, width, this.size);
