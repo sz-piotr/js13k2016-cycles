@@ -1,7 +1,6 @@
 function Game(view) {
     let graphics = new Graphics(view);
     let data = {};
-    _data = data;
     let logic = new Logic();
     let input = new Input(view, data);
 

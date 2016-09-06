@@ -26,9 +26,12 @@ let BoardAnalizer = {
         }
     },
     findCycles: function (data) {
-        data.cycles = data.board.clone();
-        data.cycles.forEach(function (element, position) {
-            smoothMultiple(data.cycles, position);
+        let cycles = data.board.clone();
+        cycles.forEach(function (element, position) {
+            smoothMultiple(cycles, position);
+        });
+        cycles.forEach(function (element, position) {
+            data.board.get(position).setPartOfCycle(!element.isEmpty());
         });
 
         function smoothMultiple(board, position) {

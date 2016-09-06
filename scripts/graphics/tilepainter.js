@@ -72,7 +72,7 @@ function TilePainter() {
         if (tile.isGlitch()) {
             return 'hsl(' + tile.hue + ', 100%, 35%)';
         } else if (tile.isPartOfCycle()) {
-            return '#DDDDDD';
+            return '#BBBBBB';
         } else {
             return '#B0A274';
         }
