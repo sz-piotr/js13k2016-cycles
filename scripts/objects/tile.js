@@ -46,7 +46,7 @@ Tile.resolve = function (direction) {
     }
 }
 
-let tileset = [
+Tile.tileset = [
     new Tile(0, 0, 1, 1),
     new Tile(0, 1, 0, 1),
     new Tile(0, 1, 1, 0),

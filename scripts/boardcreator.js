@@ -25,7 +25,7 @@ let BoardCreator = {
 
         function fill(board, position) {
             if (board.has(position)) {
-                let tiles = shuffle(tileset.slice());
+                let tiles = shuffle(Tile.tileset.slice());
                 while (true) {
                     board.set(position, tiles.pop().clone());
                     if (BoardAnalizer.isTree(board))
