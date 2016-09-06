@@ -1,5 +1,5 @@
 function Logic() {
-    let FALL_SPEED = 8;
+    let FALL_SPEED = 4;
 
     this.update = function (data) {
         updateIfBoardChanged(data);
@@ -11,7 +11,7 @@ function Logic() {
         if (data.boardChanged) {
             data.boardChanged = false;
             if (BoardAnalizer.findCycles(data)) {
-                data.timeUntileTileRemove = 0.3;
+                data.timeUntilTileRemove = 0.5;
             } else {
                 data.ignoreInput = false;
             }
@@ -19,21 +19,20 @@ function Logic() {
     }
 
     function removeTilesIfNeeded(data) {
-        if (data.timeUntileTileRemove) {
-            data.timeUntileTileRemove -= data.time.delta;
-            if (data.timeUntileTileRemove <= 0) {
-                delete data.timeUntileTileRemove;
+        if (data.timeUntilTileRemove > 0) {
+            data.timeUntilTileRemove -= data.time.delta;
+            if (data.timeUntilTileRemove <= 0) {
                 removeTiles(data);
             }
         }
     }
 
     function removeTiles(data) {
-        console.log('removeTiles');
         for (let i = 0; i < data.board.size; i++) {
             for (let j = data.board.size - 1; j >= 0; j--) {
                 let tile = data.board.getXY(i, j);
                 if (tile.isPartOfCycle()) {
+                    tile.setPartOfCycle(false);
                     tile.offset = 3;
                 }
             }
@@ -44,11 +43,13 @@ function Logic() {
         let positionChanged = false;
         data.board.forEach(function (tile) {
             updateHue(tile, data.time.delta);
-            if(updatePosition(tile, data.time.delta))
+            if (updatePosition(tile, data.time.delta)) {
                 positionChanged = true;
+            }
         });
-        if(!data.timeUntileTileRemove && !positionChanged)
-            data.ignoreInput = false;
+        if (data.timeUntilTileRemove <= 0 && !positionChanged) {
+            data.boardChanged = true;
+        }
     }
 
     function updateHue(tile, delta) {
@@ -62,13 +63,14 @@ function Logic() {
     }
 
     function updatePosition(tile, delta) {
-        if(tile.offset === 0)
+        if (tile.offset === 0)
             return false;
 
         tile.offset -= delta * FALL_SPEED;
-        if(tile.offset <= 0) {
+        if (tile.offset <= 0) {
             tile.offset = 0;
-            return true;
         }
+
+        return true;
     }
 }
