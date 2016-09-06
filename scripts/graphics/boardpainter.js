@@ -9,15 +9,15 @@ function BoardPainter(ctx, view) {
     function drawBoard(board, offset) {
         board.forEach(function (element, pos) {
             if (pos.y === offset.row) {
-                tilePainter.paintTile(ctx, pos.add(new Vector2(offset.value, 0)), element);
-                tilePainter.paintTile(ctx, pos.add(new Vector2(offset.value - board.size, 0)), element);
-                tilePainter.paintTile(ctx, pos.add(new Vector2(offset.value + board.size, 0)), element);
+                tilePainter.paintTile(ctx, pos.x + offset.value, pos.y, element);
+                tilePainter.paintTile(ctx, pos.x + offset.value - board.size, pos.y, element);
+                tilePainter.paintTile(ctx, pos.x + offset.value + board.size, pos.y, element);
             } else if (pos.x === offset.column) {
-                tilePainter.paintTile(ctx, pos.add(new Vector2(0, offset.value)), element);
-                tilePainter.paintTile(ctx, pos.add(new Vector2(0, offset.value - board.size)), element);
-                tilePainter.paintTile(ctx, pos.add(new Vector2(0, offset.value + board.size)), element);
+                tilePainter.paintTile(ctx, pos.x, pos.y + offset.value, element);
+                tilePainter.paintTile(ctx, pos.x, pos.y + offset.value - board.size, element);
+                tilePainter.paintTile(ctx, pos.x, pos.y + offset.value + board.size, element);
             } else {
-                tilePainter.paintTile(ctx, pos, element);
+                tilePainter.paintTile(ctx, pos.x, pos.y, element);
             }
         });
     };

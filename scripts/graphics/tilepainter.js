@@ -28,32 +28,34 @@ function TilePainter() {
         line.vertical.height = (height - yThickness) / 2;
     };
 
-    this.paintTile = function (ctx, position, tile) {
-        position = position.mul(size);
-        if (isVisible(position)) {
-            paintOutline(ctx, position);
-            position = position.add(new Vector2(outline, outline));
-            paintBase(ctx, position, tile);
-            paintPattern(ctx, position, tile);
+    this.paintTile = function (ctx, x, y, tile) {
+        x *= size;
+        y *= size;
+        if (isVisible(x, y)) {
+            paintOutline(ctx, x, y);
+            x += outline;
+            y += outline;
+            paintBase(ctx, x, y, tile);
+            paintPattern(ctx, x, y, tile);
         }
     };
 
-    function isVisible(position) {
+    function isVisible(x, y) {
         let min = -size,
             max = size * 7;
-        return (position.x >= min) && (position.x <= max) && (position.y >= min) && (position.y <= max);
+        return (x >= min) && (x <= max) && (y >= min) && (y <= max);
     }
 
-    function paintOutline(ctx, position) {
+    function paintOutline(ctx, x, y) {
         ctx.fillStyle = '#181818';
-        Graphics.roundRect(ctx, position.x, position.y, size, size, radius);
+        Graphics.roundRect(ctx, x, y, size, size, radius);
     }
 
-    function paintBase(ctx, position, tile) {
+    function paintBase(ctx, x, y, tile) {
         ctx.fillStyle = getSecondaryColor(tile);
-        Graphics.roundRect(ctx, position.x, position.y + shadow, width, height, radius);
+        Graphics.roundRect(ctx, x, y + shadow, width, height, radius);
         ctx.fillStyle = getPrimaryColor(tile);
-        Graphics.roundRect(ctx, position.x, position.y, width, height, radius);
+        Graphics.roundRect(ctx, x, y, width, height, radius);
     }
 
     function getPrimaryColor(tile) {
@@ -76,27 +78,23 @@ function TilePainter() {
         }
     }
 
-    function paintPattern(ctx, position, tile) {
+    function paintPattern(ctx, x, y, tile) {
         if (tile.isEmpty())
             return;
 
         let verticalLineDimensions = new Vector2(line.vertical.width, line.vertical.height),
-            horizontalLineDimensions = new Vector2(line.horizontal.width, line.horizontal.height);
+            horizontalLineDimensions = new Vector2();
 
         ctx.fillStyle = 'black';
         if (tile.has('n'))
-            rect(ctx, position.add(new Vector2(line.horizontal.width, 0)), verticalLineDimensions);
+            ctx.fillRect(x + line.horizontal.width, y, line.vertical.width, line.vertical.height);
         if (tile.has('w'))
-            rect(ctx, position.add(new Vector2(0, line.vertical.height)), horizontalLineDimensions);
+            ctx.fillRect(x, y + line.vertical.height, line.horizontal.width, line.horizontal.height);
         if (tile.has('s'))
-            rect(ctx, position.add(new Vector2(line.horizontal.width, line.vertical.height + line.horizontal.height)), verticalLineDimensions);
+            ctx.fillRect(x + line.horizontal.width, y + line.vertical.height + line.horizontal.height, line.vertical.width, line.vertical.height);
         if (tile.has('e'))
-            rect(ctx, position.add(new Vector2(line.horizontal.width + line.vertical.width, line.vertical.height)), horizontalLineDimensions);
-        drawCenterPin(ctx, position.x + width / 2, position.y + height / 2, line.vertical.width, line.horizontal.height);
-    }
-
-    function rect(ctx, a, b) {
-        ctx.fillRect(a.x, a.y, b.x, b.y);
+            ctx.fillRect(x + line.horizontal.width + line.vertical.width, y + line.vertical.height, line.horizontal.width, line.horizontal.height);
+        drawCenterPin(ctx, x + width / 2, y + height / 2, line.vertical.width, line.horizontal.height);
     }
 
     function drawCenterPin(ctx, x, y, width, height) {

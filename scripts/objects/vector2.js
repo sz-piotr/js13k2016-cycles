@@ -10,12 +10,12 @@ function Vector2(x, y) {
         }
     });
 
-    this.add = function (other) {
-        return new Vector2(x + other.x, y + other.y);
+    this.add = function (vector) {
+        return new Vector2(x + vector.x, y + vector.y);
     }
 
-    this.sub = function (other) {
-        return new Vector2(x - other.x, y - other.y);
+    this.sub = function (vector) {
+        return new Vector2(x - vector.x, y - vector.y);
     }
 
     this.mul = function (scalar) {
