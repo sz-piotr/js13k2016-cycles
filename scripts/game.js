@@ -44,3 +44,5 @@ function Game(view) {
         data.time.fps = Math.round(1000 / (data.time.fps / data.time.history.length));
     }
 }
+
+Game.BOARD_SIZE = 7;

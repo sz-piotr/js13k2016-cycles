@@ -1,10 +1,11 @@
 function Tile(n, e, s, w) {
     let tile = {
-        n: Boolean(n),
-        e: Boolean(e),
-        s: Boolean(s),
-        w: Boolean(w)
-    };
+            n: Boolean(n),
+            e: Boolean(e),
+            s: Boolean(s),
+            w: Boolean(w)
+        },
+        partOfCycle = false;
 
     this.has = function (direction) {
         return tile[Tile.resolve(direction)];
@@ -18,17 +19,18 @@ function Tile(n, e, s, w) {
         return new Tile(tile.n, tile.e, tile.s, tile.w);
     };
 
-    Object.defineProperties(this, {
-        "empty": {
-            get: isEmpty
-        },
-        "glitch": {
-            get: isEmpty
-        }
-    });
-
-    function isEmpty() {
+    this.isEmpty = function () {
         return !(tile.n || tile.e || tile.s || tile.w);
+    }
+
+    this.isGlitch = this.isEmpty;
+
+    this.isPartOfCycle = function () {
+        return partOfCycle;
+    }
+
+    this.setPartOfCycle = function (value) {
+        partOfCycle = value;
     }
 }
 

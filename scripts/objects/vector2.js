@@ -18,6 +18,10 @@ function Vector2(x, y) {
         return new Vector2(x - other.x, y - other.y);
     }
 
+    this.mul = function (scalar) {
+        return new Vector2(x * scalar, y * scalar);
+    }
+
     this.equals = function (other) {
         if (!(other instanceof Vector2))
             return false;

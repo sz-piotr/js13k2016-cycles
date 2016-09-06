@@ -1,6 +1,6 @@
 let BoardCreator = {
     create: function (level) {
-        let board = new Matrix(7, 7, new Tile());
+        let board = new Matrix(Game.BOARD_SIZE, Game.BOARD_SIZE, new Tile());
         this.spiralFill(board);
         this.levelFill(board, level);
         return board;
