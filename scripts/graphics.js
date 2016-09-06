@@ -9,7 +9,9 @@ function Graphics(view) {
         clear('mid');
         clear('bot');
         drawFps(data.time.fps);
+        TilePainter.resize(view.mid.width, data.board.size);
         drawBoard(data.board, data.offset);
+        drawCycles(data.cycles);
     };
 
     function clear(location) {
@@ -27,7 +29,6 @@ function Graphics(view) {
     };
 
     function drawBoard(board, offset) {
-        TilePainter.resize(view.mid.width, board.size);
         board.forEach(function (element, pos) {
             if (pos.y === offset.row) {
                 TilePainter.paint(ctx.mid, pos.x + offset.value, pos.y, element);
@@ -40,6 +41,17 @@ function Graphics(view) {
             } else {
                 TilePainter.paint(ctx.mid, pos.x, pos.y, element);
             }
+        });
+    };
+
+    function drawCycles(board) {
+        if (!board)
+            return;
+        board.forEach(function (element, pos) {
+            TilePainter.paintCycleDark(ctx.mid, pos.x, pos.y, element);
+        });
+        board.forEach(function (element, pos) {
+            TilePainter.paintCycleLight(ctx.mid, pos.x, pos.y, element);
         });
     };
 }
@@ -64,6 +76,27 @@ let TilePainter = {
                 height: (this.height - yThickness) / 2
             }
         };
+    },
+    paintCycleDark: function (ctx, x, y, tile) {
+        if (tile.empty)
+            return;
+        let center = new Vector2(x * this.size + this.size / 2, y * this.size + this.outline + this.height / 2);
+        ctx.fillStyle = '#181818';
+        this.paintCycle(ctx, center, tile, this.line.vertical.width * 2, this.line.horizontal.height * 2);
+    },
+    paintCycleLight: function (ctx, x, y, tile) {
+        if (tile.empty)
+            return;
+        let center = new Vector2(x * this.size + this.size / 2, y * this.size + this.outline + this.height / 2);
+        ctx.fillStyle = '#fff';
+        this.paintCycle(ctx, center, tile, this.line.vertical.width * 1.3, this.line.horizontal.height * 1.3);
+    },
+    paintCycle: function(ctx, center, tile, width, height) {
+        this.drawCenterPin(ctx, center.x, center.y, width, height);
+        if (tile.has('s'))
+            ctx.fillRect(center.x - width / 2, center.y, width, this.size);
+        if (tile.has('e'))
+            ctx.fillRect(center.x, center.y - height / 2, this.size, height);
     },
     paint: function (ctx, x, y, tile) {
         x = x * this.size + this.outline;
@@ -104,13 +137,13 @@ let TilePainter = {
             ctx.fillRect(x + this.line.horizontal.width, y + this.line.vertical.height + this.line.horizontal.height, this.line.vertical.width, this.line.vertical.height);
         if (tile.has('e'))
             ctx.fillRect(x + this.line.horizontal.width + this.line.vertical.width, y + this.line.vertical.height, this.line.horizontal.width, this.line.horizontal.height);
-        ctx.beginPath();
         this.drawCenterPin(ctx, x + this.width / 2, y + this.height / 2, this.line.vertical.width, this.line.horizontal.height);
-        ctx.fill();
     },
     drawCenterPin: function (ctx, x, y, width, height) {
         if (ctx.ellipse) {
+            ctx.beginPath();
             ctx.ellipse(x, y, width / Math.sqrt(2), height / Math.sqrt(2), 0, 0, 2 * Math.PI);
+            ctx.fill();
         } else {
             width += 2;
             height += 2;

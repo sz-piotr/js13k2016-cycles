@@ -5,7 +5,6 @@ function Tile(n, e, s, w) {
         s: Boolean(s),
         w: Boolean(w)
     };
-    let empty = !(tile.n || tile.e || tile.s || tile.w);
 
     this.has = function (direction) {
         return tile[Tile.resolve(direction)];
@@ -21,14 +20,16 @@ function Tile(n, e, s, w) {
 
     Object.defineProperties(this, {
         "empty": {
-            value: empty,
-            writable: false
+            get: isEmpty
         },
         "glitch": {
-            value: empty,
-            writable: false
+            get: isEmpty
         }
     });
+
+    function isEmpty() {
+        return !(tile.n || tile.e || tile.s || tile.w);
+    }
 }
 
 Tile.resolve = function (direction) {

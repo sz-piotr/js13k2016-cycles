@@ -32,17 +32,29 @@ let BoardAnalizer = {
         });
 
         function smoothMultiple(board, position) {
-
+            let neighbourData = smoothSingle(board, position);
+            if (neighbourData.neighbours === 1) {
+                board.get(position).set(neighbourData.neighbour, false);
+                smoothMultiple(board, position.add(neighbourData.neighbour));
+            }
         };
 
         function smoothSingle(board, position) {
             let neighbours = 0;
+            let neighbour;
             for (let i = 0; i < Vector2.directions.length; i++) {
                 let next = position.add(Vector2.directions[i]);
                 if (board.has(next) && BoardAnalizer.areNeighbours(board, position, next)) {
                     neighbours++;
+                    neighbour = Vector2.directions[i];
+                } else {
+                    board.get(position).set(next.sub(position), false);
                 }
             }
+            return {
+                neighbours: neighbours,
+                neighbour: neighbour
+            };
         }
     },
     areNeighbours: function (board, a, b) {

@@ -45,30 +45,31 @@ function Matrix(width, height, fill) {
     }
 
     this.getXY = function (x, y) {
-        return this.get(new Vector2(x, y));
+        if (inBounds(x, y))
+            return matrix[x][y];
     }
 
     this.get = function (position) {
-        if (inBounds(position))
-            return matrix[position.x][position.y];
+        return this.getXY(position.x, position.y);
     }
 
     this.setXY = function (x, y, value) {
-        return this.set(new Vector2(x, y), value);
+        if (inBounds(x, y))
+            matrix[x][y] = value;
     }
 
     this.set = function (position, value) {
-        if (inBounds(position))
-            matrix[position.x][position.y] = value;
+        this.setXY(position.x, position.y, value);
     }
 
-    this.hasXY = function (x, y) {
-        return inBounds(new Vector2(x, y));
-    }
-    this.has = inBounds;
+    this.hasXY = inBounds;
 
-    function inBounds(position) {
-        return position.x >= 0 && position.x < width && position.y >= 0 && position.y < height;
+    this.has = function (position) {
+        return this.hasXY(position.x, position.y);
+    };
+
+    function inBounds(x, y) {
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
 
     this.forEach = function (callback) {
@@ -80,7 +81,9 @@ function Matrix(width, height, fill) {
     this.clone = function () {
         let clone = new Matrix(width, height);
         clone.forEach(function (element, position) {
-            clone.set(position, deepCopy(matrix[position.x][position.y]));
+            let original = matrix[position.x][position.y];
+            let copy = original.clone ? original.clone() : deepCopy(original);
+            clone.set(position, copy);
         });
         return clone;
     }
