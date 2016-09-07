@@ -26,18 +26,18 @@ function Input(view, data) {
         }
     }
 
-    function onMouseMove(e) {
+    function onMouseMove(event) {
         if (data.ignoreInput || !ignoreMousePress)
             return;
         inputProcessor.onmove(eventBoardLocation(event));
     }
 
-    function onMouseUp(e) {
+    function onMouseUp(event) {
         ignoreMousePress = false;
         inputProcessor.onrelease();
     }
 
-    function onMouseLeave(e) {
+    function onMouseLeave(event) {
         ignoreMousePress = false;
         inputProcessor.oncancel();
     }
@@ -66,7 +66,7 @@ function Input(view, data) {
         }
     };
 
-    function onTouchMove() {
+    function onTouchMove(event) {
         event.preventDefault();
         if (data.ignoreInput || handledTouch === false)
             return;

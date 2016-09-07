@@ -61,8 +61,6 @@ function TilePainter() {
     function getPrimaryColor(tile) {
         if (tile.isGlitch()) {
             return 'hsl(' + tile.hue + ', 80%, 50%)';
-        } else if (tile.isPartOfCycle()) {
-            return '#FFFFFF';
         } else {
             return '#F9ECC0';
         }
@@ -71,8 +69,6 @@ function TilePainter() {
     function getSecondaryColor(tile) {
         if (tile.isGlitch()) {
             return 'hsl(' + tile.hue + ', 100%, 35%)';
-        } else if (tile.isPartOfCycle()) {
-            return '#BBBBBB';
         } else {
             return '#B0A274';
         }
@@ -82,19 +78,25 @@ function TilePainter() {
         if (tile.isEmpty())
             return;
 
-        let verticalLineDimensions = new Vector2(line.vertical.width, line.vertical.height),
-            horizontalLineDimensions = new Vector2();
-
-        ctx.fillStyle = 'black';
-        if (tile.has('n'))
-            ctx.fillRect(x + line.horizontal.width, y, line.vertical.width, line.vertical.height);
-        if (tile.has('w'))
-            ctx.fillRect(x, y + line.vertical.height, line.horizontal.width, line.horizontal.height);
-        if (tile.has('s'))
-            ctx.fillRect(x + line.horizontal.width, y + line.vertical.height + line.horizontal.height, line.vertical.width, line.vertical.height);
-        if (tile.has('e'))
-            ctx.fillRect(x + line.horizontal.width + line.vertical.width, y + line.vertical.height, line.horizontal.width, line.horizontal.height);
+        if (tile.has('n')) {
+            rect(line.horizontal.width, 0, line.vertical.width, line.vertical.height, tile.hasCycle('n'));
+        }
+        if (tile.has('w')) {
+            rect(0, line.vertical.height, line.horizontal.width, line.horizontal.height, tile.hasCycle('w'));
+        }
+        if (tile.has('s')) {
+            rect(line.horizontal.width, line.vertical.height + line.horizontal.height, line.vertical.width, line.vertical.height, tile.hasCycle('s'));
+        }
+        if (tile.has('e')) {
+            rect(line.horizontal.width + line.vertical.width, line.vertical.height, line.horizontal.width, line.horizontal.height, tile.hasCycle('e'));
+        }
+        ctx.fillStyle = tile.isPartOfCycle() ? '#3C60D6' : 'black';
         drawCenterPin(ctx, x + width / 2, y + height / 2, line.vertical.width, line.horizontal.height);
+
+        function rect(addX, addY, width, height, isCycle) {
+            ctx.fillStyle = isCycle ? '#3C60D6' : 'black';
+            ctx.fillRect(x + addX, y + addY, width, height);
+        }
     }
 
     function drawCenterPin(ctx, x, y, width, height) {

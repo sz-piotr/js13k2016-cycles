@@ -5,7 +5,7 @@ function Tile(n, e, s, w) {
             s: Boolean(s),
             w: Boolean(w)
         },
-        partOfCycle = false;
+        cycle = {};
 
     this.has = function (direction) {
         return tile[Tile.resolve(direction)];
@@ -15,10 +15,6 @@ function Tile(n, e, s, w) {
         tile[Tile.resolve(direction)] = Boolean(value);
     };
 
-    this.clone = function () {
-        return new Tile(tile.n, tile.e, tile.s, tile.w);
-    };
-
     this.isEmpty = function () {
         return !(tile.n || tile.e || tile.s || tile.w);
     }
@@ -26,12 +22,27 @@ function Tile(n, e, s, w) {
     this.isGlitch = this.isEmpty;
 
     this.isPartOfCycle = function () {
-        return partOfCycle;
+        return cycle.n || cycle.e || cycle.s || cycle.w || false;
     }
 
-    this.setPartOfCycle = function (value) {
-        partOfCycle = value;
+    this.hasCycle = function (direction) {
+        return cycle[Tile.resolve(direction)];
     }
+
+    this.setCycle = function (tile) {
+        if (tile === false) {
+            cycle = {};
+        } else {
+            cycle.n = tile.has('n');
+            cycle.e = tile.has('e');
+            cycle.s = tile.has('s');
+            cycle.w = tile.has('w');
+        }
+    }
+
+    this.clone = function () {
+        return new Tile(tile.n, tile.e, tile.s, tile.w);
+    };
 
     this.offset = 0;
 }

@@ -35,7 +35,7 @@ let BoardAnalizer = {
             let partOfCycle = !element.isEmpty();
             if (partOfCycle)
                 hasCycles = true;
-            data.board.get(position).setPartOfCycle(partOfCycle);
+            data.board.get(position).setCycle(element);
         });
         return hasCycles;
 
@@ -62,6 +62,60 @@ let BoardAnalizer = {
             return {
                 neighbours: neighbours,
                 neighbour: neighbour
+            };
+        }
+    },
+    shouldDeleteArray: function(board) {
+        let shouldDelete = [],
+            fill;
+
+        initArray();
+        board.forEachXY(function (element, x, y) {
+            if (!shouldDelete[x][y].hasOwnProperty('delete')) {
+                fill = {
+                    delete: true
+                };
+                if (element.isPartOfCycle()) {
+                    shouldDelete[x][y] = fill;
+                } else {
+                    floodFillDelete(x, y, fill)
+                }
+            }
+        });
+        fixArray();
+        return shouldDelete;
+
+        function initArray() {
+            let fill = {};
+            for (let i = 0; i < board.size; i++) {
+                let column = [];
+                for (let j = 0; j < board.size; j++) {
+                    column.push(fill);
+                }
+                shouldDelete.push(column);
+            };
+        }
+
+        function floodFillDelete(x, y, fill) {
+            if (!board.hasXY(x, y)) {
+                fill.delete = false;
+                return;
+            } else if (shouldDelete[x][y].hasOwnProperty('delete') || board.getXY(x, y).isPartOfCycle()) {
+                return;
+            } else {
+                shouldDelete[x][y] = fill;
+                floodFillDelete(x + 1, y, fill);
+                floodFillDelete(x - 1, y, fill);
+                floodFillDelete(x, y + 1, fill);
+                floodFillDelete(x, y - 1, fill);
+            }
+        }
+
+        function fixArray() {
+            for (let i = 0; i < board.size; i++) {
+                for (let j = 0; j < board.size; j++) {
+                    shouldDelete[i][j] = shouldDelete[i][j].delete;
+                };
             };
         }
     },

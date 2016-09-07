@@ -1,5 +1,5 @@
 function Logic() {
-    let FALL_SPEED = 4;
+    let FALL_SPEED = 6;
 
     this.update = function (data) {
         updateIfBoardChanged(data);
@@ -11,7 +11,7 @@ function Logic() {
         if (data.boardChanged) {
             data.boardChanged = false;
             if (BoardAnalizer.findCycles(data)) {
-                data.timeUntilTileRemove = 0.5;
+                data.timeUntilTileRemove = 0.7;
             } else {
                 data.ignoreInput = false;
             }
@@ -28,12 +28,26 @@ function Logic() {
     }
 
     function removeTiles(data) {
+        let shouldDelete = BoardAnalizer.shouldDeleteArray(data.board);
         for (let i = 0; i < data.board.size; i++) {
+            let ceiling = 1;
             for (let j = data.board.size - 1; j >= 0; j--) {
-                let tile = data.board.getXY(i, j);
-                if (tile.isPartOfCycle()) {
-                    tile.setPartOfCycle(false);
-                    tile.offset = 3;
+                if (shouldDelete[i][j]) {
+                    for (var k = j - 1; k >= 0; k--) {
+                        if (!shouldDelete[i][k])
+                            break;
+                    }
+                    if (k >= 0) {
+                        shouldDelete[i][k] = true;
+                        let tile = data.board.getXY(i, k);
+                        tile.offset = j - k;
+                        data.board.setXY(i, j, tile);
+                    } else {
+                        let tile = Tile.tileset[Math.floor(Math.random() * Tile.tileset.length)].clone();
+                        tile.offset = j + ceiling;
+                        data.board.setXY(i, j, tile);
+                        ceiling++;
+                    }
                 }
             }
         }
