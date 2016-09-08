@@ -21,11 +21,13 @@ function TilePainter() {
         let xThickness = width / 6,
             yThickness = xThickness * 6 / 7;
 
-        line.horizontal.width = (width - xThickness) / 2;
-        line.horizontal.height = yThickness;
+        line.horizontal.x = width / 2;
+        line.horizontal.y = 0;
+        line.horizontal.thickness = yThickness;
 
-        line.vertical.width = xThickness;
-        line.vertical.height = (height - yThickness) / 2;
+        line.vertical.x = 0;
+        line.vertical.y = height / 2;
+        line.vertical.thickness = xThickness;
     };
 
     this.paintTile = function (ctx, x, y, tile) {
@@ -79,35 +81,37 @@ function TilePainter() {
             return;
 
         if (tile.has('n')) {
-            rect(line.horizontal.width, 0, line.vertical.width, line.vertical.height, tile.hasCycle('n'));
+            drawLine(line.horizontal.x, 0, 'vertical', tile.hasCycle('n'));
         }
         if (tile.has('w')) {
-            rect(0, line.vertical.height, line.horizontal.width, line.horizontal.height, tile.hasCycle('w'));
+            drawLine(0, line.vertical.y, 'horizontal', tile.hasCycle('w'));
         }
         if (tile.has('s')) {
-            rect(line.horizontal.width, line.vertical.height + line.horizontal.height, line.vertical.width, line.vertical.height, tile.hasCycle('s'));
+            drawLine(line.horizontal.x, line.vertical.y + line.horizontal.y, 'vertical', tile.hasCycle('s'));
         }
         if (tile.has('e')) {
-            rect(line.horizontal.width + line.vertical.width, line.vertical.height, line.horizontal.width, line.horizontal.height, tile.hasCycle('e'));
+            drawLine(line.horizontal.x + line.vertical.x, line.vertical.y, 'horizontal', tile.hasCycle('e'));
         }
-        ctx.fillStyle = tile.isPartOfCycle() ? Graphics.BLUE : 'black';
-        drawCenterPin(ctx, x + width / 2, y + height / 2, line.vertical.width, line.horizontal.height);
+        drawCenterPin(ctx, x + width / 2, y + height / 2, tile.isPartOfCycle());
 
-        function rect(addX, addY, width, height, isCycle) {
-            ctx.fillStyle = isCycle ? Graphics.BLUE : 'black';
-            ctx.fillRect(x + addX, y + addY, width, height);
+        function drawLine(x0, y0, direction, isCycle) {
+            ctx.strokeStyle = isCycle ? Graphics.BLUE : 'black';
+            ctx.lineWidth = isCycle ? line[direction].thickness * 1.5 : line[direction].thickness;
+
+            ctx.beginPath();
+            ctx.moveTo(x + x0, y + y0);
+            ctx.lineTo(x + x0 + line[direction].x, y + y0 + line[direction].y);
+            ctx.stroke();
         }
     }
 
-    function drawCenterPin(ctx, x, y, width, height) {
-        if (ctx.ellipse) {
-            ctx.beginPath();
-            ctx.ellipse(x, y, width / Math.sqrt(2), height / Math.sqrt(2), 0, 0, 2 * Math.PI);
-            ctx.fill();
-        } else {
-            width += 2;
-            height += 2;
-            ctx.fillRect(x - width / 2, y - width / 2, width, height);
-        }
+    function drawCenterPin(ctx, x, y, isCycle) {
+        let width = isCycle ? line.vertical.thickness * 1.5 : line.vertical.thickness;
+        let height = isCycle ? line.horizontal.thickness * 1.5 : line.horizontal.thickness;
+        ctx.fillStyle = isCycle ? Graphics.BLUE : 'black';
+
+        ctx.beginPath();
+        ctx.ellipse(x, y, width / Math.sqrt(2), height / Math.sqrt(2), 0, 0, 2 * Math.PI);
+        ctx.fill();
     }
 }
