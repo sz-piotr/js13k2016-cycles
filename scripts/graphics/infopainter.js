@@ -2,7 +2,7 @@ function InfoPainter(ctx, view) {
 
     this.paint = function (data) {
         drawFps(data.time.fps);
-        drawTime(data.level.timeleft);
+        drawTime(data.level.timeLeft);
     }
 
     function drawFps(fps) {

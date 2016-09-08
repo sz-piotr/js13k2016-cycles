@@ -2,7 +2,6 @@ let Levels = [{
     isGlitch: function (position) {
         return false;
     },
-    turns: false,
     time: 60,
     text: 'Shift the board to create cycles',
     objectiveMet: function (data) {

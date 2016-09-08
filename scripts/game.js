@@ -5,27 +5,9 @@ function Game(view) {
     let input = new Input(view, data);
 
     this.start = function () {
-        data.currentLevel = localStorage.getItem('level') || 0;
-        localStorage.setItem('level', data.currentLevel);
-
-        initData();
+        logic.init(data);
         input.listen();
         gameLoop();
-    }
-
-    function initData() {
-        data.time = {
-            last: Date.now(),
-            history: []
-        };
-        let level = Levels[data.currentLevel];
-        data.board = BoardCreator.create(level);
-        console.log(level);
-        data.level = {
-            startTime: Date.now() / 1000,
-            timeTotal: level.time,
-            timeleft: level.time
-        }
     }
 
     function gameLoop() {
@@ -38,7 +20,8 @@ function Game(view) {
     function updateTime() {
         let now = Date.now();
 
-        data.level.timeleft = data.level.timeTotal + Math.ceil(data.level.startTime - now / 1000);
+        if (data.level.timeTotal)
+            data.level.timeleft = data.level.timeTotal + Math.ceil(data.level.startTime - now / 1000);
 
         data.time.delta = (now - data.time.last) / 1000;
         data.time.last = now;
