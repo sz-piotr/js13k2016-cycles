@@ -18,7 +18,14 @@ function Game(view) {
             last: Date.now(),
             history: []
         };
-        data.board = BoardCreator.create(Levels[data.currentLevel]);
+        let level = Levels[data.currentLevel];
+        data.board = BoardCreator.create(level);
+        console.log(level);
+        data.level = {
+            startTime: Date.now() / 1000,
+            timeTotal: level.time,
+            timeleft: level.time
+        }
     }
 
     function gameLoop() {
@@ -30,6 +37,9 @@ function Game(view) {
 
     function updateTime() {
         let now = Date.now();
+
+        data.level.timeleft = data.level.timeTotal + Math.ceil(data.level.startTime - now / 1000);
+
         data.time.delta = (now - data.time.last) / 1000;
         data.time.last = now;
 

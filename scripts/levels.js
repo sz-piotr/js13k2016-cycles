@@ -3,7 +3,7 @@ let Levels = [{
         return false;
     },
     turns: false,
-    time: false,
+    time: 60,
     text: 'Shift the board to create cycles',
     objectiveMet: function (data) {
         return data.score > 0;

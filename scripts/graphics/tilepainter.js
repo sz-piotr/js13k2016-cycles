@@ -90,11 +90,11 @@ function TilePainter() {
         if (tile.has('e')) {
             rect(line.horizontal.width + line.vertical.width, line.vertical.height, line.horizontal.width, line.horizontal.height, tile.hasCycle('e'));
         }
-        ctx.fillStyle = tile.isPartOfCycle() ? '#3C60D6' : 'black';
+        ctx.fillStyle = tile.isPartOfCycle() ? Graphics.BLUE : 'black';
         drawCenterPin(ctx, x + width / 2, y + height / 2, line.vertical.width, line.horizontal.height);
 
         function rect(addX, addY, width, height, isCycle) {
-            ctx.fillStyle = isCycle ? '#3C60D6' : 'black';
+            ctx.fillStyle = isCycle ? Graphics.BLUE : 'black';
             ctx.fillRect(x + addX, y + addY, width, height);
         }
     }

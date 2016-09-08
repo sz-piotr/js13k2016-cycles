@@ -28,6 +28,8 @@ function Graphics(view) {
     };
 }
 
+Graphics.BLUE = '#3C60D6';
+
 Graphics.roundRect = function (ctx, x, y, width, height, radius) {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
