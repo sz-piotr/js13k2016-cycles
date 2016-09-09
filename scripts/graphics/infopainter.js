@@ -28,7 +28,7 @@ function InfoPainter(ctx, view) {
             x = view.width - offset,
             y = view.height - offset;
         ctx.fillStyle = '#888';
-        ctx.font = 'bold ' + size + 'px monospace';
+        ctx.font = 'bold ' + size + 'px sans-serif';
         ctx.fillText('x', x, y);
     }
 
