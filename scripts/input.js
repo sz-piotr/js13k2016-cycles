@@ -3,7 +3,7 @@ function Input(view, data) {
     let ignoreMousePress = false;
     let handledTouch = false;
 
-    this.listen = function() {
+    this.listen = function () {
         data.offset = {};
 
         document.body.addEventListener('mousedown', onMouseDown, false);
@@ -23,6 +23,23 @@ function Input(view, data) {
         if (contained(event, view.mid.getBoundingClientRect())) {
             ignoreMousePress = true;
             inputProcessor.onpress(eventBoardLocation(event));
+        } else if (contained(event, view.bot.getBoundingClientRect())) {
+            reactIfButtonPressed(event);
+        }
+    }
+
+    function reactIfButtonPressed(event) {
+        console.log('a');
+        let rect = view.bot.getBoundingClientRect(),
+            x = event.clientX - rect.left,
+            y = event.clientY - rect.top;
+        if (y > rect.height * 0.40 && y < rect.height * 0.75) {
+            console.log('down');
+            if (x < rect.height * 0.75 && x > rect.height * 0.20) {
+                inputProcessor.restartLevelPressed();
+            } else if (x > rect.width - rect.height * 0.75 && x < rect.width - rect.height * 0.20) {
+                inputProcessor.wipeSavePressed();
+            }
         }
     }
 
@@ -63,6 +80,8 @@ function Input(view, data) {
         if (contained(touch, view.mid.getBoundingClientRect())) {
             inputProcessor.onpress(eventBoardLocation(touch));
             handledTouch = touch.identifier;
+        } else if (contained(touch, view.bot.getBoundingClientRect())) {
+            reactIfButtonPressed(touch);
         }
     };
 

@@ -9,6 +9,27 @@ function InfoPainter(ctx, view) {
         } else if (data.level.hasOwnProperty('turnsLeft')) {
             drawNumber(metrics, data.level.turnsLeft, 'TURNS LEFT');
         }
+        drawRestartButton();
+        drawEraseProgressButton();
+    }
+
+    function drawRestartButton() {
+        let size = view.height / 2.5,
+            x = view.height / 5 + size / 2,
+            y = view.height - x;
+        ctx.fillStyle = '#888';
+        ctx.font = 'bold ' + size + 'px sans-serif';
+        ctx.fillText(String.fromCharCode(8634), x, y);
+    }
+
+    function drawEraseProgressButton() {
+        let size = view.height / 2.5,
+            offset = view.height / 5 + size / 2,
+            x = view.width - offset,
+            y = view.height - offset;
+        ctx.fillStyle = '#888';
+        ctx.font = 'bold ' + size + 'px monospace';
+        ctx.fillText('x', x, y);
     }
 
     function drawStroked(text, x, y) {

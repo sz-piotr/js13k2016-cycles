@@ -1,10 +1,11 @@
+Logic.LEVEL_KEY = 'pl.szpiotr.cycles.level';
+
 function Logic() {
     let FALL_SPEED = 6,
-        LEVEL_KEY = 'pl.szpiotr.cycles.level',
         levelCompleted;
 
     this.init = function (data) {
-        let level = localStorage.getItem(LEVEL_KEY) || 0;
+        let level = localStorage.getItem(Logic.LEVEL_KEY) || 0;
         initLevel(data, level);
     }
 
@@ -14,7 +15,7 @@ function Logic() {
         initTime();
         initScore();
 
-        localStorage.setItem(LEVEL_KEY, number);
+        localStorage.setItem(Logic.LEVEL_KEY, number);
         initLevelProperties();
 
         function clearData() {

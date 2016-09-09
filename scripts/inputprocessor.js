@@ -76,4 +76,15 @@ function InputProcessor(data) {
     this.oncancel = function () {
         data.offset = {};
     }
+
+    this.restartLevelPressed = function() {
+        location.reload();
+    }
+
+    this.wipeSavePressed = function() {
+        if(window.confirm('Erase all saved data?')) {
+            localStorage.removeItem(Logic.LEVEL_KEY);
+            location.reload();
+        }
+    }
 }
