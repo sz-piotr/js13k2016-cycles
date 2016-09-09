@@ -1,24 +1,51 @@
 function InfoPainter(ctx, view) {
 
     this.paint = function (data) {
-        drawFps(data.time.fps);
-        drawTime(data.level.timeLeft);
+        let metrics = setup();
+        initStroke();
+        drawDescription(metrics, data.level.text);
+        if (data.level.hasOwnProperty('timeLeft')) {
+            drawNumber(metrics, data.level.timeLeft, 'TIME LEFT');
+        } else if (data.level.hasOwnProperty('turnsLeft')) {
+            drawNumber(metrics, data.level.turnsLeft, 'TURNS LEFT');
+        }
     }
 
-    function drawFps(fps) {
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 20px sans-serif';
-        ctx.fillText('FPS: ' + fps, 20, 40);
-    };
+    function drawStroked(text, x, y) {
+        ctx.strokeText(text, x, y);
+        ctx.fillText(text, x, y);
+    }
 
-    function drawTime(time) {
-        ctx.fillStyle = 'red';
-        let fontHeight = view.height / 3;
-        ctx.save();
+    function initStroke() {
+        ctx.strokeStyle = 'black';
+        ctx.lineJoin = "miter";
+        ctx.miterLimit = 2;
+        ctx.lineWidth = view.height / 15;
+    }
+
+    function drawDescription(metrics, text) {
+        ctx.font = 'bold ' + metrics.descriptionSize + 'px sans-serif';
+        drawStroked(text, view.width / 2, metrics.descriptionOffset);
+    }
+
+    function drawNumber(metrics, number, type) {
+        ctx.font = 'bold ' + metrics.numberSize + 'px sans-serif';
+        ctx.fillText(number, view.width / 2, metrics.numberOffset);
+        ctx.font = 'bold ' + metrics.typeSize + 'px sans-serif';
+        ctx.fillText(type, view.width / 2, metrics.typeOffset);
+    }
+
+    function setup() {
+        ctx.fillStyle = 'white';
         ctx.textBaseline = 'middle';
         ctx.textAlign = "center";
-        ctx.font = 'bold ' + fontHeight + 'px sans-serif';
-        ctx.fillText(time, view.width / 2, view.height / 2);
-        ctx.restore();
+        return {
+            descriptionSize: view.height / 5,
+            descriptionOffset: view.height / 5,
+            numberSize: view.height * 2 / 5,
+            numberOffset: view.height * 3 / 5,
+            typeSize: view.height / 10,
+            typeOffset: view.height * 85 / 100
+        }
     }
 }

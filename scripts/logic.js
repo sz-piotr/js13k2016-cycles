@@ -36,7 +36,8 @@ function Logic() {
             data.score = 0;
             data.combo = {
                 current: 0,
-                previous: 0
+                previous: 0,
+                color: 'white'
             };
         }
 
@@ -46,6 +47,7 @@ function Logic() {
 
             data.level = {};
             data.level.current = number;
+            data.level.text = level.text;
             if (level.hasOwnProperty('turns')) {
                 data.level.turnsLeft = level.turns;
             } else if (level.hasOwnProperty('time')) {
@@ -58,10 +60,19 @@ function Logic() {
     }
 
     this.update = function (data) {
+        updateTimeLeft(data);
         processPlayerActions(data);
         removeTilesIfNeeded(data);
         updateTiles(data);
         endLevelIfNecessary(data);
+    }
+
+    function updateTimeLeft(data) {
+        if (data.level.hasOwnProperty('timeLeft')) {
+            data.level.timeLeft = Math.ceil((data.level.timeTotal * 1000 + data.level.startTime - Date.now()) / 1000);
+            if (data.level.timeLeft < 0)
+                data.level.timeLeft = 0;
+        }
     }
 
     function processPlayerActions(data) {
@@ -119,8 +130,10 @@ function Logic() {
                     data.score += 50 * (data.combo.current + 1);
             }
         });
-        if (updateCombo)
+        if (updateCombo) {
+            data.combo.color = Graphics.getRainbow();
             data.combo.current++;
+        }
     }
 
     function removeTiles(data, shouldDelete) {
