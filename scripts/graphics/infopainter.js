@@ -8,11 +8,11 @@ function InfoPainter(ctx, view) {
     function drawFps(fps) {
         ctx.fillStyle = 'white';
         ctx.font = 'bold 20px sans-serif';
-        ctx.fillText(fps, 20, 40);
+        ctx.fillText('FPS: ' + fps, 20, 40);
     };
 
     function drawTime(time) {
-        ctx.fillStyle = Graphics.BLUE;
+        ctx.fillStyle = 'red';
         let fontHeight = view.height / 3;
         ctx.save();
         ctx.textBaseline = 'middle';

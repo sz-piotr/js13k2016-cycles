@@ -11,8 +11,7 @@ let Levels = [{
     isGlitch: function (position) {
         return position.x === 3 && position.y === 3;
     },
-    turns: false,
-    time: false,
+    time: 120,
     text: 'Create a cycle around the glitch block to destroy it',
     objectiveMet: noGlitch
 }]

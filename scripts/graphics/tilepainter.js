@@ -92,10 +92,10 @@ function TilePainter() {
         if (tile.has('e')) {
             drawLine(line.horizontal.x + line.vertical.x, line.vertical.y, 'horizontal', tile.hasCycle('e'));
         }
-        drawCenterPin(ctx, x + width / 2, y + height / 2, tile.isPartOfCycle());
+        drawCenterPin(x + width / 2, y + height / 2, tile.isPartOfCycle());
 
         function drawLine(x0, y0, direction, isCycle) {
-            ctx.strokeStyle = isCycle ? Graphics.BLUE : 'black';
+            ctx.strokeStyle = isCycle ? Graphics.cycleColor : 'black';
             ctx.lineWidth = isCycle ? line[direction].thickness * 1.5 : line[direction].thickness;
 
             ctx.beginPath();
@@ -103,15 +103,15 @@ function TilePainter() {
             ctx.lineTo(x + x0 + line[direction].x, y + y0 + line[direction].y);
             ctx.stroke();
         }
-    }
 
-    function drawCenterPin(ctx, x, y, isCycle) {
-        let width = isCycle ? line.vertical.thickness * 1.5 : line.vertical.thickness;
-        let height = isCycle ? line.horizontal.thickness * 1.5 : line.horizontal.thickness;
-        ctx.fillStyle = isCycle ? Graphics.BLUE : 'black';
+        function drawCenterPin(x, y, isCycle) {
+            let width = isCycle ? line.vertical.thickness * 1.5 : line.vertical.thickness;
+            let height = isCycle ? line.horizontal.thickness * 1.5 : line.horizontal.thickness;
+            ctx.fillStyle = isCycle ? Graphics.cycleColor : 'black';
 
-        ctx.beginPath();
-        ctx.ellipse(x, y, width / Math.sqrt(2), height / Math.sqrt(2), 0, 0, 2 * Math.PI);
-        ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(x, y, width / Math.sqrt(2), height / Math.sqrt(2), 0, 0, 2 * Math.PI);
+            ctx.fill();
+        }
     }
 }

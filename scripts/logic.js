@@ -1,81 +1,126 @@
 function Logic() {
-    let FALL_SPEED = 6;
+    let FALL_SPEED = 6,
+        LEVEL_KEY = 'pl.szpiotr.cycles.level',
+        levelCompleted;
 
     this.init = function (data) {
-        data.time = {
-            last: Date.now(),
-            now: Date.now(),
-            history: []
-        }
-
-        var level = localStorage.getItem('pl.szpiotr.cycles.level') || 0;
+        let level = localStorage.getItem(LEVEL_KEY) || 0;
         initLevel(data, level);
     }
 
     function initLevel(data, number) {
-        localStorage.setItem('pl.szpiotr.cycles.level', number);
-        let level = Levels[number];
+        clearData();
+        data.offset = {};
+        initTime();
+        initScore();
 
-        data.level = {};
-        data.level.currentLevel = number;
-        if (level.hasOwnProperty('turns')) {
-            data.level.turnsLeft = level.turns;
-        } else if (level.hasOwnProperty('time')) {
-            data.level.startTime = Date.now();
-            data.level.timeTotal = level.time;
-            data.level.timeLeft = level.time;
+        localStorage.setItem(LEVEL_KEY, number);
+        initLevelProperties();
+
+        function clearData() {
+            for (let prop in data) {
+                if (data.hasOwnProperty(prop))
+                    delete data[prop];
+            }
         }
-        data.board = BoardCreator.create(level);
+
+        function initTime() {
+            data.time = {
+                last: Date.now(),
+                now: Date.now(),
+                history: []
+            }
+        }
+
+        function initScore() {
+            data.score = 0;
+            data.combo = {
+                current: 0,
+                previous: 0
+            };
+        }
+
+        function initLevelProperties() {
+            let level = Levels[number];
+            levelCompleted = level.objectiveMet;
+
+            data.level = {};
+            data.level.current = number;
+            if (level.hasOwnProperty('turns')) {
+                data.level.turnsLeft = level.turns;
+            } else if (level.hasOwnProperty('time')) {
+                data.level.startTime = Date.now();
+                data.level.timeTotal = level.time;
+                data.level.timeLeft = level.time;
+            }
+            data.board = BoardCreator.create(level);
+        }
     }
 
     this.update = function (data) {
-        updateIfBoardChanged(data);
+        processPlayerActions(data);
         removeTilesIfNeeded(data);
         updateTiles(data);
+        endLevelIfNecessary(data);
     }
 
-    function updateIfBoardChanged(data) {
-        if (data.boardChanged) {
-            if (data.turnPassed) {
-                data.turnPassed = false;
-                if (data.level.hasOwnProperty('turnsLeft'))
-                    data.level.turnsLeft--;
-            }
-
+    function processPlayerActions(data) {
+        if (data.boardChanged === true) {
             data.boardChanged = false;
+            analyzeBoard();
+            handleEndOfTurn();
+        }
+
+        function analyzeBoard() {
             if (BoardAnalizer.findCycles(data)) {
+                Graphics.cycleColor = Graphics.getRainbow();
                 data.timeUntilTileRemove = 0.7;
             } else {
                 data.ignoreInput = false;
+                data.turnPassed = true;
             }
         }
-        if (!data.ignoreInput)
-            endLevelIfNecessary(data);
-    }
 
-    function endLevelIfNecessary(data) {
-        if (data.level.hasOwnProperty('turnsLeft') && data.level.turnsLeft <= 0) {
-        } else if (data.level.hasOwnProperty('timeLeft') && data.level.timeLeft <= 0) {
-            initLevel(data, ++data.currentLevel);
-        }
-        else if (data.shouldRestart) {
-            initLevel(data, data.currentLevel);
+        function handleEndOfTurn() {
+            if (data.turnPassed === true) {
+                data.turnPassed = false;
+
+                if (data.level.hasOwnProperty('turnsLeft'))
+                    data.level.turnsLeft--;
+
+                if (data.combo.current === data.combo.previous) {
+                    data.combo.current = data.combo.previous = 0;
+                } else {
+                    data.combo.previous = data.combo.current;
+                }
+            }
         }
     }
 
     function removeTilesIfNeeded(data) {
         if (data.timeUntilTileRemove > 0) {
             data.timeUntilTileRemove -= data.time.delta;
-            if (data.timeUntilTileRemove <= 0) {
+            if (data.timeUntilTileRemove < 0) {
                 let shouldDelete = BoardAnalizer.shouldDeleteArray(data.board);
-                countScore(data, shouldDelete);
+                updateScore(data, shouldDelete);
                 removeTiles(data, shouldDelete);
             }
         }
     }
 
-    function countScore() {
-        
+    function updateScore(data, shouldDelete) {
+        let updateCombo = false;
+        let counter = 0;
+        data.board.forEachXY(function (element, x, y) {
+            if (shouldDelete[x][y]) {
+                updateCombo = true;
+                data.score += ++counter * (data.combo.current + 1);
+                if (element.isGlitch())
+                    data.score += 50 * (data.combo.current + 1);
+            }
+        });
+        if (updateCombo)
+            data.combo.current++;
     }
 
     function removeTiles(data, shouldDelete) {
@@ -106,35 +151,54 @@ function Logic() {
     function updateTiles(data) {
         let positionChanged = false;
         data.board.forEach(function (tile) {
-            updateHue(tile, data.time.delta);
+            updateHue(tile);
             if (updatePosition(tile, data.time.delta)) {
                 positionChanged = true;
             }
         });
-        if (data.timeUntilTileRemove <= 0 && !positionChanged) {
+        if (data.timeUntilTileRemove < 0 && !positionChanged) {
+            data.timeUntilTileRemove = 0;
             data.boardChanged = true;
         }
-    }
 
-    function updateHue(tile, delta) {
-        if (tile.isGlitch()) {
-            if (!tile.hasOwnProperty('nextChange') || tile.nextChange <= 0) {
-                tile.hue = Math.random() * 360;
-                tile.nextChange = Math.random() * 1.5;
+        function updateHue(tile) {
+            if (tile.isGlitch()) {
+                if (!tile.hasOwnProperty('nextChange') || tile.nextChange <= 0) {
+                    tile.hue = Math.random() * 360;
+                    tile.nextChange = Math.random() * 1.5;
+                }
+                tile.nextChange -= data.time.delta;
             }
-            tile.nextChange -= delta;
+        }
+
+        function updatePosition(tile) {
+            if (tile.offset === 0)
+                return false;
+
+            tile.offset -= data.time.delta * FALL_SPEED;
+            if (tile.offset <= 0) {
+                tile.offset = 0;
+            }
+
+            return true;
         }
     }
 
-    function updatePosition(tile, delta) {
-        if (tile.offset === 0)
-            return false;
-
-        tile.offset -= delta * FALL_SPEED;
-        if (tile.offset <= 0) {
-            tile.offset = 0;
+    function endLevelIfNecessary(data) {
+        if (!data.ignoreInput) {
+            if (noTurnsLeft() || noTimeLeft()) {
+                initLevel(data, data.level.current);
+            } else if (levelCompleted(data)) {
+                initLevel(data, ++data.level.current);
+            }
         }
 
-        return true;
+        function noTurnsLeft() {
+            return data.level.hasOwnProperty('turnsLeft') && data.level.turnsLeft <= 0;
+        }
+
+        function noTimeLeft() {
+            return data.level.hasOwnProperty('timeLeft') && data.level.timeLeft <= 0;
+        }
     }
 }

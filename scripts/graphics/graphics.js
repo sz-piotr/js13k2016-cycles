@@ -28,7 +28,9 @@ function Graphics(view) {
     };
 }
 
-Graphics.BLUE = '#3C60D6';
+Graphics.getRainbow = function () {
+    return 'hsl(' + Math.random() * 360 + ', 90%, 40%)';
+}
 
 Graphics.roundRect = function (ctx, x, y, width, height, radius) {
     ctx.beginPath();

@@ -49,7 +49,6 @@ function InputProcessor(data) {
             updateBoardAfterShift();
             data.ignoreInput = true;
             data.boardChanged = true;
-            data.turnPassed = true;
         }
 
         data.offset = {};
