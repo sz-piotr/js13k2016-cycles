@@ -61,6 +61,10 @@ function Logic() {
     }
 
     this.update = function(data) {
+        if (data.restart === true) {
+            initLevel(data, data.level.current);
+            return;
+        }
         data.message.update(data);
         updateTimeLeft(data);
         processPlayerActions(data);
@@ -127,9 +131,9 @@ function Logic() {
         data.board.forEachXY(function(element, x, y) {
             if (shouldDelete[x][y]) {
                 updateCombo = true;
-                data.score += ++counter * (data.combo.current + 1);
+                data.score += ++counter * (data.combo.current + 1) * 10;
                 if (element.isGlitch())
-                    data.score += 50 * (data.combo.current + 1);
+                    data.score += 500 * (data.combo.current + 1);
             }
         });
         if (updateCombo) {
@@ -203,7 +207,10 @@ function Logic() {
     function endLevelIfNecessary(data) {
         if (!data.ignoreInput) {
             if (noTurnsLeft() || noTimeLeft()) {
-                initLevel(data, data.level.current);
+                if (data.ignoreBoardInput != true) {
+                    data.message = new Message('Level failed', 1, true);
+                    data.ignoreBoardInput = true;
+                }
             } else if (levelCompleted(data)) {
                 initLevel(data, ++data.level.current);
             }

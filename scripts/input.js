@@ -29,12 +29,10 @@ function Input(view, data) {
     }
 
     function reactIfButtonPressed(event) {
-        console.log('a');
         let rect = view.bot.getBoundingClientRect(),
             x = event.clientX - rect.left,
             y = event.clientY - rect.top;
         if (y > rect.height * 0.40 && y < rect.height * 0.75) {
-            console.log('down');
             if (x < rect.height * 0.75 && x > rect.height * 0.20) {
                 inputProcessor.restartLevelPressed();
             } else if (x > rect.width - rect.height * 0.75 && x < rect.width - rect.height * 0.20) {

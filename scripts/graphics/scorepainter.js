@@ -29,7 +29,7 @@ function ScorePainter(ctx, view) {
     }
 
     function scoreText(score) {
-        return (score * 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     function comboText(combo) {

@@ -29,7 +29,7 @@ function Graphics(view) {
 }
 
 Graphics.getRainbow = function () {
-    return 'hsl(' + Math.random() * 360 + ', 90%, 40%)';
+    return 'hsl(' + Math.random() * 360 + ', 100%, 60%)';
 }
 
 Graphics.roundRect = function (ctx, x, y, width, height, radius) {

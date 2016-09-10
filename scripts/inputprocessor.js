@@ -2,11 +2,15 @@ function InputProcessor(data) {
     let tileSelected;
     let offset = {};
 
-    this.onpress = function (location) {
+    this.onpress = function(location) {
+        if (data.ignoreBoardInput === true)
+            return;
         tileSelected = location;
     }
 
-    this.onmove = function (location) {
+    this.onmove = function(location) {
+        if (data.ignoreBoardInput === true)
+            return;
         offset = {
             x: location.x - tileSelected.x,
             y: location.y - tileSelected.y
@@ -41,7 +45,10 @@ function InputProcessor(data) {
         return Math.min(Math.max(number, min), max);
     }
 
-    this.onrelease = function () {
+    this.onrelease = function() {
+        if (data.ignoreBoardInput === true)
+            return;
+
         data.offset.value = Math.round(-data.offset.value) || 0;
         if (data.offset.value < 0)
             data.offset.value += data.board.width;
@@ -73,16 +80,16 @@ function InputProcessor(data) {
         }
     }
 
-    this.oncancel = function () {
+    this.oncancel = function() {
         data.offset = {};
     }
 
     this.restartLevelPressed = function() {
-        location.reload();
+        data.restart = true;
     }
 
     this.wipeSavePressed = function() {
-        if(window.confirm('Erase all saved data?')) {
+        if (window.confirm('Erase all saved data?')) {
             localStorage.removeItem(Logic.LEVEL_KEY);
             location.reload();
         }
