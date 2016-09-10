@@ -13,10 +13,10 @@ function setupView() {
     size.sum = size.top + size.mid + size.bot;
     let ratio = size.mid / size.sum;
     let canvas = {
-        top: document.getElementById('top'),
-        mid: document.getElementById('mid'),
-        bot: document.getElementById('bot'),
-        back: document.getElementById('back')
+        top: document.getElementById('a'),
+        mid: document.getElementById('b'),
+        bot: document.getElementById('c'),
+        back: document.getElementById('d')
     }
 
     updateOnResize();
