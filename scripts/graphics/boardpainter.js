@@ -4,6 +4,7 @@ function BoardPainter(ctx, view) {
     this.paint = function (data) {
         tilePainter.recalculate(view.width);
         drawBoard(data.board, data.offset);
+        drawMessage(data.message);
     }
 
     function drawBoard(board, offset) {
@@ -21,4 +22,19 @@ function BoardPainter(ctx, view) {
             }
         });
     };
+
+    function drawMessage(message) {
+        if(message.visible) {
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = "center";
+            ctx.fillStyle = message.color;
+            ctx.font = 'bold ' + message.size * view.height / 10  + 'px sans-serif';
+            ctx.strokeStyle = 'black';
+            ctx.lineJoin = "miter";
+            ctx.miterLimit = 2;
+            ctx.lineWidth = view.height / 30;
+            ctx.strokeText(message.text, view.width / 2, view.height / 2);
+            ctx.fillText(message.text, view.width /2, view.height / 2);
+        }
+    }
 }

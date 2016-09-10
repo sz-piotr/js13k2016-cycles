@@ -18,22 +18,10 @@ function Game(view) {
     };
 
     function updateTime() {
-        let now = Date.now();
+        data.time.now = Date.now();
 
-        if (data.level.timeTotal)
-            data.level.timeleft = data.level.timeTotal + Math.ceil(data.level.startTime - now / 1000);
-
-        data.time.delta = (now - data.time.last) / 1000;
-        data.time.last = now;
-
-        data.time.history.push(data.time.delta);
-        if (data.time.history.length > 20)
-            data.time.history.shift();
-        data.time.fps = 0;
-        data.time.history.forEach(function (element) {
-            data.time.fps += element;
-        });
-        data.time.fps = Math.round(data.time.history.length / data.time.fps);
+        data.time.delta = (data.time.now - data.time.last) / 1000;
+        data.time.last = data.time.now;
     }
 }
 

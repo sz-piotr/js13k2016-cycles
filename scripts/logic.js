@@ -4,7 +4,7 @@ function Logic() {
     let FALL_SPEED = 6,
         levelCompleted;
 
-    this.init = function (data) {
+    this.init = function(data) {
         let level = localStorage.getItem(Logic.LEVEL_KEY) || 0;
         initLevel(data, level);
     }
@@ -28,8 +28,7 @@ function Logic() {
         function initTime() {
             data.time = {
                 last: Date.now(),
-                now: Date.now(),
-                history: []
+                now: Date.now()
             }
         }
 
@@ -46,6 +45,7 @@ function Logic() {
             let level = Levels[number];
             levelCompleted = level.objectiveMet;
 
+            data.message = new Message('Level ' + number, 2);
             data.level = {};
             data.level.current = number;
             data.level.text = level.text;
@@ -60,7 +60,8 @@ function Logic() {
         }
     }
 
-    this.update = function (data) {
+    this.update = function(data) {
+        data.message.update(data);
         updateTimeLeft(data);
         processPlayerActions(data);
         removeTilesIfNeeded(data);
@@ -123,7 +124,7 @@ function Logic() {
     function updateScore(data, shouldDelete) {
         let updateCombo = false;
         let counter = 0;
-        data.board.forEachXY(function (element, x, y) {
+        data.board.forEachXY(function(element, x, y) {
             if (shouldDelete[x][y]) {
                 updateCombo = true;
                 data.score += ++counter * (data.combo.current + 1);
@@ -134,6 +135,7 @@ function Logic() {
         if (updateCombo) {
             data.combo.color = Graphics.getRainbow();
             data.combo.current++;
+            ComboAnnouncer.announce(data);
         }
     }
 
@@ -164,7 +166,7 @@ function Logic() {
 
     function updateTiles(data) {
         let positionChanged = false;
-        data.board.forEach(function (tile) {
+        data.board.forEach(function(tile) {
             updateHue(tile);
             if (updatePosition(tile, data.time.delta)) {
                 positionChanged = true;
