@@ -20,7 +20,6 @@ function InputProcessor(data) {
 
     function processOffset() {
         if (!data.offset.invalid && (Math.abs(offset.x) > 0.3 || Math.abs(offset.y) > 0.3) && data.offset.value === undefined) {
-            console.log('asd');
             if (Math.abs(offset.x) > Math.abs(offset.y)) {
                 data.offset.row = Math.floor(tileSelected.y);
                 data.offset.invalid = false;

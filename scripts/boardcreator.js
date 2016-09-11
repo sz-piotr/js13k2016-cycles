@@ -43,7 +43,6 @@ let BoardCreator = {
             }
             if (level.hasOwnProperty('isBlocker') && level.isBlocker(position)) {
                 board.get(position).setBlocker(true);
-                console.log(board.get(position).isBlocker());
             }
         });
     }
