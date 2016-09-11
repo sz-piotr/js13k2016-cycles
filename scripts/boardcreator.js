@@ -38,7 +38,7 @@ let BoardCreator = {
     },
     levelFill: function (board, level) {
         board.forEach(function (element, position) {
-            if (level.isGlitch(position)) {
+            if (level.isEmpty(position)) {
                 board.set(position, new Tile());
             }
             if (level.hasOwnProperty('isBlocker') && level.isBlocker(position)) {

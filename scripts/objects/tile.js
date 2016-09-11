@@ -20,7 +20,9 @@ function Tile(n, e, s, w) {
         return !(tile.n || tile.e || tile.s || tile.w);
     }
 
-    this.isGlitch = this.isEmpty;
+    this.isGlitch = function() {
+        return !(tile.n || tile.e || tile.s || tile.w) && !blocker;
+    };
 
     this.isPartOfCycle = function () {
         return cycle.n || cycle.e || cycle.s || cycle.w || false;
