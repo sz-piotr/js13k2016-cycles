@@ -37,14 +37,14 @@ let Levels = [{
 }, {
     isEmpty: function (position) {
         switch (position.x) {
-        case 0:
-            return position.y === 6;
         case 1:
+            return position.y === 5;
+        case 2:
         case 3:
-        case 5:
+        case 4:
             return position.x === position.y;
-        case 6:
-            return position.y === 0;
+        case 5:
+            return position.y === 1;
         default:
             return false;
         }
@@ -53,7 +53,7 @@ let Levels = [{
         return position.x === 3 && position.y === 3;
     },
     time: 200,
-    text: 'Destroy all glitch',
+    text: 'Destroy all the glitch tiles',
     objectiveMet: noGlitch
 }, {
     isEmpty: function (position) {
