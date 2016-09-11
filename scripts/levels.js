@@ -113,6 +113,9 @@ let Levels = [{
     isGlitch: function(position) {
         return position.x % 2 === position.y % 2;
     },
+    isBlocker: function(position) {
+        return (position.x - 1) % 4 === 0 && (position.y - 1) % 4 === 0;
+    },
     text: 'Free Play',
     objectiveMet: function(data) {
         return false;

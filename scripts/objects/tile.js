@@ -5,7 +5,8 @@ function Tile(n, e, s, w) {
             s: Boolean(s),
             w: Boolean(w)
         },
-        cycle = {};
+        cycle = {},
+        blocker = false;
 
     this.has = function (direction) {
         return tile[Tile.resolve(direction)];
@@ -27,6 +28,14 @@ function Tile(n, e, s, w) {
 
     this.hasCycle = function (direction) {
         return cycle[Tile.resolve(direction)];
+    }
+
+    this.isBlocker = function () {
+        return blocker;
+    }
+
+    this.setBlocker = function (value) {
+        blocker = Boolean(value);
     }
 
     this.setCycle = function (tile) {

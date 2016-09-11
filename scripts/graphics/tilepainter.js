@@ -38,6 +38,7 @@ function TilePainter() {
             x += outline;
             y += outline;
             paintBase(ctx, x, y, tile);
+            paintBlocker(ctx, x, y, tile);
             paintPattern(ctx, x, y, tile);
         }
     };
@@ -61,7 +62,9 @@ function TilePainter() {
     }
 
     function getPrimaryColor(tile) {
-        if (tile.isGlitch()) {
+        if (tile.isBlocker()) {
+            return '#444';
+        } else if (tile.isGlitch()) {
             return 'hsl(' + tile.hue + ', 80%, 50%)';
         } else {
             return '#F9ECC0';
@@ -69,7 +72,9 @@ function TilePainter() {
     }
 
     function getSecondaryColor(tile) {
-        if (tile.isGlitch()) {
+        if (tile.isBlocker()) {
+            return '#333';
+        } else if (tile.isGlitch()) {
             return 'hsl(' + tile.hue + ', 100%, 35%)';
         } else {
             return '#B0A274';
@@ -95,7 +100,7 @@ function TilePainter() {
         drawCenterPin(x + width / 2, y + height / 2, tile.isPartOfCycle());
 
         function drawLine(x0, y0, direction, isCycle) {
-            ctx.strokeStyle = isCycle ? Graphics.cycleColor : 'black';
+            ctx.strokeStyle = getLineColor(tile, isCycle);
             ctx.lineWidth = isCycle ? line[direction].thickness * 1.5 : line[direction].thickness;
 
             ctx.beginPath();
@@ -107,11 +112,34 @@ function TilePainter() {
         function drawCenterPin(x, y, isCycle) {
             let width = isCycle ? line.vertical.thickness * 1.5 : line.vertical.thickness;
             let height = isCycle ? line.horizontal.thickness * 1.5 : line.horizontal.thickness;
-            ctx.fillStyle = isCycle ? Graphics.cycleColor : 'black';
+            ctx.fillStyle = getLineColor(tile, isCycle);
 
             ctx.beginPath();
             ctx.ellipse(x, y, width / Math.sqrt(2), height / Math.sqrt(2), 0, 0, 2 * Math.PI);
             ctx.fill();
         }
+
+        function getLineColor(tile, isCycle) {
+            if(isCycle)
+                return Graphics.cycleColor;
+            if(tile.isBlocker())
+                return 'white';
+            return 'black';
+        }
+    }
+
+    function paintBlocker(ctx, x, y, tile) {
+        if(!tile.isBlocker())
+            return;
+
+        ctx.strokeStyle = '#e00';
+        ctx.lineWidth = line.vertical.thickness * 1.2;
+
+        ctx.beginPath();
+        ctx.moveTo(x + width / 5, y + height / 5);
+        ctx.lineTo(x + width * 4 / 5, y + + height * 4 / 5);
+        ctx.moveTo(x + width * 4 / 5, y + height / 5);
+        ctx.lineTo(x + width / 5, y + + height * 4 / 5);
+        ctx.stroke();
     }
 }

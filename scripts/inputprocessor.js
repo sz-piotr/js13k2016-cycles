@@ -2,13 +2,13 @@ function InputProcessor(data) {
     let tileSelected;
     let offset = {};
 
-    this.onpress = function(location) {
+    this.onpress = function (location) {
         if (data.ignoreBoardInput === true)
             return;
         tileSelected = location;
     }
 
-    this.onmove = function(location) {
+    this.onmove = function (location) {
         if (data.ignoreBoardInput === true)
             return;
         offset = {
@@ -19,11 +19,26 @@ function InputProcessor(data) {
     }
 
     function processOffset() {
-        if ((Math.abs(offset.x) > 0.3 || Math.abs(offset.y) > 0.3) && data.offset.value === undefined) {
+        if (!data.offset.invalid && (Math.abs(offset.x) > 0.3 || Math.abs(offset.y) > 0.3) && data.offset.value === undefined) {
+            console.log('asd');
             if (Math.abs(offset.x) > Math.abs(offset.y)) {
                 data.offset.row = Math.floor(tileSelected.y);
+                data.offset.invalid = false;
+                for (let i = 0; i < data.board.size; i++) {
+                    if (data.board.getXY(i, data.offset.row).isBlocker()) {
+                        data.offset.invalid = true;
+                        break;
+                    }
+                }
             } else {
                 data.offset.column = Math.floor(tileSelected.x);
+                data.offset.invalid = false;
+                for (let i = 0; i < data.board.size; i++) {
+                    if (data.board.getXY(data.offset.column, i).isBlocker()) {
+                        data.offset.invalid = true;
+                        break;
+                    }
+                }
             }
             updateDataOffsetValue();
         }
@@ -34,7 +49,9 @@ function InputProcessor(data) {
 
     function updateDataOffsetValue() {
         let limit = data.board.width - 1;
-        if (data.offset.row !== undefined) {
+        if (data.offset.invalid === true) {
+            data.offset.value = 0;
+        } else if (data.offset.row !== undefined) {
             data.offset.value = clamp(offset.x, -limit, limit);
         } else {
             data.offset.value = clamp(offset.y, -limit, limit);
@@ -45,7 +62,7 @@ function InputProcessor(data) {
         return Math.min(Math.max(number, min), max);
     }
 
-    this.onrelease = function() {
+    this.onrelease = function () {
         if (data.ignoreBoardInput === true)
             return;
 
@@ -80,15 +97,15 @@ function InputProcessor(data) {
         }
     }
 
-    this.oncancel = function() {
+    this.oncancel = function () {
         data.offset = {};
     }
 
-    this.restartLevelPressed = function() {
+    this.restartLevelPressed = function () {
         data.restart = true;
     }
 
-    this.wipeSavePressed = function() {
+    this.wipeSavePressed = function () {
         if (window.confirm('Erase all saved data?')) {
             localStorage.removeItem(Logic.LEVEL_KEY);
             location.reload();

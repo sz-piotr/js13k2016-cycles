@@ -41,6 +41,10 @@ let BoardCreator = {
             if (level.isGlitch(position)) {
                 board.set(position, new Tile());
             }
+            if (level.hasOwnProperty('isBlocker') && level.isBlocker(position)) {
+                board.get(position).setBlocker(true);
+                console.log(board.get(position).isBlocker());
+            }
         });
     }
 }
