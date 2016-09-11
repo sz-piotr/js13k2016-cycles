@@ -28,44 +28,99 @@ let BoardAnalizer = {
     findCycles: function (data) {
         let cycles = data.board.clone(),
             hasCycles = false;
-        cycles.forEach(function (element, position) {
-            smoothMultiple(cycles, position);
-        });
+
+        smooth(cycles);
+        removeBridges(cycles);
+
         cycles.forEach(function (element, position) {
             let partOfCycle = !element.isEmpty();
             if (partOfCycle)
                 hasCycles = true;
             data.board.get(position).setCycle(element);
         });
+
         return hasCycles;
 
-        function smoothMultiple(board, position) {
-            let neighbourData = smoothSingle(board, position);
-            if (neighbourData.neighbours === 1) {
-                board.get(position).set(neighbourData.neighbour, false);
-                smoothMultiple(board, position.add(neighbourData.neighbour));
-            }
-        };
+        function smooth(board) {
+            board.forEach(function (element, position) {
+                for (let i = 0; i < Vector2.directions.length; i++) {
+                    let next = position.add(Vector2.directions[i]);
+                    if (!board.has(next) || !BoardAnalizer.areNeighbours(board, position, next)) {
+                        board.get(position).set(next.sub(position), false);
+                    }
+                }
+            });
+        }
 
-        function smoothSingle(board, position) {
-            let neighbours = 0;
-            let neighbour;
-            for (let i = 0; i < Vector2.directions.length; i++) {
-                let next = position.add(Vector2.directions[i]);
-                if (board.has(next) && BoardAnalizer.areNeighbours(board, position, next)) {
-                    neighbours++;
-                    neighbour = Vector2.directions[i];
-                } else {
-                    board.get(position).set(next.sub(position), false);
+        function removeBridges(board) {
+            let bridges = findBridges(board);
+
+            bridges.forEach(function (bridge) {
+                let posA = new Vector2(Math.floor(bridge[0] / board.size), bridge[0] % board.size),
+                    posB = new Vector2(Math.floor(bridge[1] / board.size), bridge[1] % board.size),
+                    tileA = board.get(posA),
+                    tileB = board.get(posB);
+
+                tileA.set(posB.sub(posA), false);
+                tileB.set(posA.sub(posB), false);
+            });
+        }
+
+        function findBridges(board) {
+            let visited = [],
+                disc = [],
+                low = [],
+                parent = [],
+                time = 0;
+                bridges = [];
+
+            for (let i = 0; i < board.size * board.size; i++) {
+                if (!visited[i])
+                    bridgeUtil(i);
+            }
+
+            return bridges;
+
+            function bridgeUtil(u) {
+                visited[u] = true;
+                disc[u] = low[u] = ++time;
+
+                let neighbours = getNeighbours(u);
+                for (let i = 0; i < neighbours.length; i++) {
+                    let v = neighbours[i];
+
+                    if (!visited[v]) {
+                        parent[v] = u;
+                        bridgeUtil(v);
+
+                        low[u] = Math.min(low[u], low[v]);
+                        if (low[v] > disc[u])
+                            bridges.push([u, v]);
+
+                    } else if (v != parent[u])
+                        low[u] = Math.min(low[u], disc[v]);
                 }
             }
-            return {
-                neighbours: neighbours,
-                neighbour: neighbour
-            };
+
+            function getNeighbours(u) {
+                let neighbours = [];
+                x = Math.floor(u / board.size);
+                y = u % board.size;
+
+                if (board.hasXY(x + 1, y) && board.getXY(x, y).has('e') && board.getXY(x + 1, y).has('w'))
+                    neighbours.push((x + 1) * board.size + y);
+                if (board.hasXY(x - 1, y) && board.getXY(x, y).has('w') && board.getXY(x - 1, y).has('e'))
+                    neighbours.push((x - 1) * board.size + y);
+                if (board.hasXY(x, y + 1) && board.getXY(x, y).has('s') && board.getXY(x, y + 1).has('n'))
+                    neighbours.push(x * board.size + y + 1);
+                if (board.hasXY(x, y - 1) && board.getXY(x, y).has('n') && board.getXY(x, y - 1).has('s'))
+                    neighbours.push(x * board.size + y - 1);
+
+                return neighbours;
+            }
         }
     },
-    shouldDeleteArray: function(board) {
+    shouldDeleteArray: function (board) {
         let shouldDelete = [],
             fill;
 
